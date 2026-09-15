@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Threads 連携コードの受け取り｜買いまわり帳</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<style>
+:root {
+  --ground: #EDF1EE; --paper: #FBFCFA; --ink: #1B2623; --muted: #56645F; --line: #CBD5D0;
+  --stamp: #3246A6; --on-stamp: #FFFFFF; --bad: #B03A2E; --bad-soft: #F5DDD9;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #121917; --paper: #1A2320; --ink: #E4EBE8; --muted: #98A7A1; --line: #2D3935;
+    --stamp: #93A5FF; --on-stamp: #10162E; --bad: #EF8B80; --bad-soft: #402320;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 24px 20px 48px;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+  line-height: 1.8;
+}
+main { max-width: 34rem; margin: 0 auto; display: grid; gap: 18px; }
+h1 { margin: 0; font-size: 22px; line-height: 1.4; }
+p { margin: 0; color: var(--muted); font-size: 14px; }
+.code {
+  padding: 14px 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+button {
+  font: inherit;
+  font-weight: 700;
+  min-height: 48px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--stamp);
+  color: var(--on-stamp);
+  cursor: pointer;
+}
+.error { padding: 14px 16px; background: var(--bad-soft); color: var(--bad); border-radius: 12px; font-size: 14px; }
+.note { font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Threads 連携コードの受け取り</h1>
+  <div id="result">
+    <p>読み込み中…</p>
+  </div>
+  <p class="note">このページは連携作業のための一時的なページです。コードは1回だけ使えるもので、数分で期限が切れます。ほかの人に渡さないでください。</p>
+</main>
+<script>
+(() => {
+  const params = new URLSearchParams(location.search);
+  const code = params.get('code');
+  const error = params.get('error_description') || params.get('error');
+  const result = document.getElementById('result');
+
+  if (code) {
+    result.innerHTML = '<p>このコードをコピーして、Claude に貼ってください。</p>'
+      + '<div class="code" id="code"></div>'
+      + '<p style="margin-top:14px"><button type="button" id="copy">コードをコピー</button></p>';
+    document.getElementById('code').textContent = code;
+    document.getElementById('copy').addEventListener('click', async (event) => {
+      try {
+        await navigator.clipboard.writeText(code);
+        event.target.textContent = 'コピーしました';
+      } catch {
+        const range = document.createRange();
+        range.selectNodeContents(document.getElementById('code'));
+        const selection = getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        event.target.textContent = '選択しました。長押しでコピーしてください';
+      }
+    });
+  } else if (error) {
+    result.innerHTML = '<div class="error"></div>';
+    result.firstChild.textContent = '連携できませんでした：' + error;
+  } else {
+    result.innerHTML = '<p>このページは、Threads の連携画面から戻ってきたときにコードを表示します。直接開いた場合は何も表示されません。</p>';
+  }
+})();
+</script>
+</body>
+</html>
