@@ -1,4 +1,4 @@
-"""楽天ブックス・楽天Kobo から、買いまわりの1ショップ分になる本を選ぶ"""
+"""サイトに載せる追加データの選定（本の枠、ポイント倍率アップの棚）"""
 
 from __future__ import annotations
 
@@ -33,6 +33,25 @@ def pick_books(books: list[dict], *, min_price: int, today: date, limit: int) ->
             continue
         seen.add(book["name"])
         picked.append(book)
+        if len(picked) == limit:
+            break
+    return picked
+
+
+def pick_deals(candidates: list[dict], *, limit: int, min_reviews: int = 0) -> list[dict]:
+    """いま倍率が上がっている商品を、倍率の高い順に。ショップは重複させない"""
+    picked, shops, seen = [], set(), set()
+    ordered = sorted(candidates, key=lambda it: (-it.get("point_rate_active", 1), it.get("price", 0),
+                                                 -it.get("review_count", 0)))
+    for item in ordered:
+        code = item.get("item_code") or item.get("name")
+        if item.get("point_rate_active", 1) < 2 or item.get("review_count", 0) < min_reviews:
+            continue
+        if code in seen or item.get("shop_code") in shops:
+            continue
+        seen.add(code)
+        shops.add(item.get("shop_code"))
+        picked.append(item)
         if len(picked) == limit:
             break
     return picked

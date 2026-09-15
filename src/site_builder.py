@@ -11,7 +11,7 @@ from html import escape
 from pathlib import Path
 
 from .og_image import find_font, render_plan_card, render_rakuyoko_card
-from .sections import badges, books_section, ranking_section
+from .sections import badges, books_section, calendar_section, deals_section, ranking_section, steps_section
 from .planner import Plan, is_eligible, price_with_tax
 
 ASSETS_DIR = Path(__file__).resolve().parent / "assets"
@@ -229,6 +229,10 @@ def _index_body(config: dict, plans: dict[str, Plan], candidates: list[dict], ge
   {blocks}
 </section>
 
+{steps_section(entry_url)}
+
+{deals_section(extras.get("deals"))}
+
 <section class="calc" id="calc">
   <div class="calc-copy">
     <h2>倍率と還元の計算</h2>
@@ -266,6 +270,8 @@ def _index_body(config: dict, plans: dict[str, Plan], candidates: list[dict], ge
 </section>
 
 {_history_section(history, config)}
+
+{calendar_section(extras.get("calendar"))}
 
 <section class="rules">
   <h2>買いまわりの数え方</h2>

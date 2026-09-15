@@ -16,11 +16,11 @@ from pathlib import Path
 import yaml
 from dotenv import load_dotenv
 
-from src.extras import pick_books
+from src.extras import pick_books, pick_deals
 from src.history import record_history
 from src.planner import STRATEGIES, apply_point_rates, pick_items, summarize
 from src.rakuten_api import RakutenApiError, RakutenClient, parse_items
-from src.schedule import JST, format_period, next_event, parse_events
+from src.schedule import JST, format_period, next_event, parse_events, upcoming_summary
 from src.site_builder import build_site
 
 ROOT = Path(__file__).resolve().parent
@@ -173,6 +173,13 @@ def main() -> int:
         return 0
 
     extras = collect_extras(config, client, now, shop_at)
+    conf = config.get("extras") or {}
+    # 買いまわり枠の候補に加えて、売れ筋（価格帯が広い）からも倍率アップを拾う
+    ranked = [item for tab in extras["rankings"] for item in tab["items"]]
+    extras["deals"] = pick_deals(candidates + ranked, limit=conf.get("point_deals_limit", 8),
+                                 min_reviews=config["search"]["min_review_count"])
+    extras["calendar"] = upcoming_summary(parse_events(config.get("marathon_events")), now)
+    log.info("倍率アップ %d件、開催予定 %d件", len(extras["deals"]), len(extras["calendar"]))
     history = record_history(ROOT / "data" / ("history-demo.json" if args.demo else "history.json"),
                              plans, len(candidates), now)
     out_dir = ROOT / (config["site"]["out_dir"] + ("-demo" if args.demo else ""))

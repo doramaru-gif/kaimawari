@@ -34,6 +34,13 @@ def main() -> int:
     threads_conf = config["threads"]
     now = datetime.now(JST)
 
+    store = QueueStore(queue_path(ROOT))
+    waiting = [p for p in store.snapshot().get("posts", []) if p["state"] in ("approved", "publishing")]
+    if not waiting:
+        # 10分おきに動くので、予約が無いときは静かに終わる
+        log.info("投稿の予約はありません")
+        return 0
+
     tokens = TokenStore(ROOT / "data" / "threads_token.json", os.getenv("THREADS_ACCESS_TOKEN"))
     user_id = os.getenv("THREADS_USER_ID")
     dry_run = args.dry_run
@@ -50,7 +57,7 @@ def main() -> int:
         client = ThreadsClient(access_token=tokens.current(), user_id=user_id)
 
     try:
-        results = publish_due(QueueStore(queue_path(ROOT)), client, now=now,
+        results = publish_due(store, client, now=now,
                               grace_minutes=threads_conf["publish_grace_minutes"], dry_run=dry_run)
     except QueueError as err:
         log.error("%s", err)

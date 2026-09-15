@@ -510,6 +510,68 @@ input[type="range"] { flex: 1; min-width: 0; height: 32px; accent-color: var(--s
 .chip.is-point { background: var(--warn-soft); color: var(--warn); }
 .chip.is-soy { background: var(--ok-soft); color: var(--ok); }
 
+/* 買う前の3ステップ */
+.step-list { margin: 0; padding-left: 1.4em; display: grid; gap: 12px; max-width: 44rem; }
+.step-list li { padding-left: 4px; }
+.step-list b { display: block; font-size: 15px; }
+.step-list span { font-size: 14px; color: var(--muted); }
+.steps .note { margin-top: 14px; }
+
+/* 還元率が高い順 */
+.deal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+  gap: 0 32px;
+}
+.deal {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.deal-thumb { width: 48px; height: 48px; border-radius: 6px; object-fit: cover; background: var(--stamp-soft); }
+.deal-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.deal-name:hover { text-decoration: underline; }
+.deal-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; margin-top: 3px; font-size: 12px; color: var(--muted); }
+.deal .p { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 開催の予定 */
+.cal-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; max-width: 46rem; }
+.cal-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 14px;
+  align-items: baseline;
+  padding: 12px 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.cal-item.is-now { border-color: var(--stamp); }
+.cal-when {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--stamp);
+  white-space: nowrap;
+}
+.cal-name { font-weight: 700; font-size: 15px; }
+.cal-period { grid-column: 2; font-size: 13px; color: var(--muted); }
+.cal-cap { grid-column: 2; font-size: 12px; color: var(--muted); }
+
 /* 本命探しの売れ筋 */
 .rank-list {
   list-style: none;

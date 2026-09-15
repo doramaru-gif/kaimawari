@@ -47,6 +47,7 @@ rakuyoko:
 # トップページの追加セクション。1回の更新でAPIを 売れ筋4回＋本2回 呼ぶ
 extras:
   ranking_limit: 10
+  point_deals_limit: 8        # 「今日のポイント倍率アップ」に出す件数
   rankings:                   # 楽天市場デイリーランキング（sex: 0=男性 1=女性）
     - {label: 総合}
     - {label: 女性30代, age: 30, sex: 1}

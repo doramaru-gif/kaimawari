@@ -46,6 +46,20 @@ def format_period(ev: MarathonEvent) -> str:
             f"{e.month}月{e.day}日（{WEEKDAYS[e.weekday()]}）{e:%H:%M}")
 
 
+def upcoming_summary(events: list[MarathonEvent], now: datetime, limit: int = 3) -> list[dict]:
+    """サイトに出す開催予定（これから終わる回だけ）"""
+    summary = []
+    for ev in [e for e in events if e.end > now][:limit]:
+        summary.append({
+            "name": ev.name,
+            "period": format_period(ev),
+            "point_cap": ev.point_cap,
+            "ongoing": ev.start <= now <= ev.end,
+            "days_until": max(0, (ev.start.date() - now.date()).days),
+        })
+    return summary
+
+
 def slots_for(ev: MarathonEvent) -> list[tuple[str, datetime]]:
     """1回のマラソンで投稿する枠。終了は深夜1:59なので「最終日」は終了2時間前の日付で決める"""
     def on_day(offset: int, hour: int, minute: int) -> datetime:
