@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ラクヨコ送料無料ライン計算機｜買いまわり帳</title>
+<meta name="description" content="楽天ラクヨコの注文条件（2,100〜16,666円）に収まるか判定し、超えたときの分け方を出す計算機。">
+<link rel="canonical" href="https://doramaru-gif.github.io/kaimawari/rakuyoko.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="買いまわり帳">
+<meta property="og:title" content="ラクヨコ送料無料ライン計算機｜買いまわり帳">
+<meta property="og:description" content="楽天ラクヨコの注文条件（2,100〜16,666円）に収まるか判定し、超えたときの分け方を出す計算機。">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:url" content="https://doramaru-gif.github.io/kaimawari/rakuyoko.html">
+<meta property="og:image" content="https://doramaru-gif.github.io/kaimawari/assets/og-rakuyoko.png?v=20260916">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@500&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=7157cf04">
+</head>
+<body>
+<p class="pr-bar"><span class="pr-tag">PR</span>このサイトは楽天アフィリエイトを利用しています</p>
+
+<header class="masthead">
+  <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">10</span>買いまわり帳</a>
+  <nav class="nav" aria-label="ページ"><a href="index.html">買いまわりプラン</a><a href="rakuyoko.html" aria-current="page">ラクヨコ計算機</a></nav>
+</header>
+<main>
+<section class="lead">
+  <p class="eyebrow">楽天ラクヨコ</p>
+  <h1>2,100円から16,666円。<br>送料無料の枠に<span class="nowrap">収める計算機</span></h1>
+  <p class="lede">ラクヨコは1回の注文が2,100〜16,666円（税込）のときだけ注文できます。カートに入れたい商品の金額を並べると、足りない金額と、上限を超えたときの分け方を出します。</p>
+</section>
+
+<section class="splitter" data-rakuyoko-calc data-min="2100" data-max="16666">
+  <div class="rows-wrap">
+    <div class="rows-head"><h2>カートの金額</h2><button type="button" class="text-button" data-clear>例を消す</button></div>
+    <ol class="rows" data-rows><li class="row"><span class="row-tag">例</span><label><span class="visually-hidden">商品の金額（円）</span><input type="number" min="1" step="1" inputmode="numeric" value="1990"></label><button type="button" class="row-remove">削除</button></li><li class="row"><span class="row-tag">例</span><label><span class="visually-hidden">商品の金額（円）</span><input type="number" min="1" step="1" inputmode="numeric" value="2490"></label><button type="button" class="row-remove">削除</button></li><li class="row"><span class="row-tag">例</span><label><span class="visually-hidden">商品の金額（円）</span><input type="number" min="1" step="1" inputmode="numeric" value="3980"></label><button type="button" class="row-remove">削除</button></li><li class="row"><span class="row-tag">例</span><label><span class="visually-hidden">商品の金額（円）</span><input type="number" min="1" step="1" inputmode="numeric" value="1290"></label><button type="button" class="row-remove">削除</button></li><li class="row"><span class="row-tag">例</span><label><span class="visually-hidden">商品の金額（円）</span><input type="number" min="1" step="1" inputmode="numeric" value="4980"></label><button type="button" class="row-remove">削除</button></li><li class="row"><span class="row-tag">例</span><label><span class="visually-hidden">商品の金額（円）</span><input type="number" min="1" step="1" inputmode="numeric" value="2980"></label><button type="button" class="row-remove">削除</button></li><li class="row"><span class="row-tag">例</span><label><span class="visually-hidden">商品の金額（円）</span><input type="number" min="1" step="1" inputmode="numeric" value="890"></label><button type="button" class="row-remove">削除</button></li><li class="row"><span class="row-tag">例</span><label><span class="visually-hidden">商品の金額（円）</span><input type="number" min="1" step="1" inputmode="numeric" value="1580"></label><button type="button" class="row-remove">削除</button></li></ol>
+    <button type="button" class="add" data-add>金額を追加</button>
+    <p class="rk-summary" data-summary aria-hidden="true" hidden></p>
+  </div>
+  <div class="result" data-result aria-live="polite"><p class="note">金額を入れると判定します。</p></div>
+</section>
+
+<section class="facts">
+  <h2>注文前に知っておくこと</h2>
+  <dl>
+    <dt>注文できる金額</dt><dd>1回2,100円〜16,666円（税込）</dd>
+    <dt>送料</dt><dd>無料（沖縄・離島・一部地域を除く）</dd>
+    <dt>ポイント</dt><dd>税抜100円につき楽天ポイント1ポイント。支払いにも使えます</dd>
+    <dt>返品</dt><dd>「Rセレクト」の商品は、発送日から30日以内なら自己都合でも返品できます</dd>
+  </dl>
+  <p class="note">出典：<a href="https://corp.rakuten.co.jp/news/press/2026/0825_01.html" rel="noopener" target="_blank">楽天グループ プレスリリース（2026年8月25日）</a>。ラクヨコの商品情報・画像はこのサイトでは扱っていません。</p>
+  <p><a class="button" href="https://rakuyoko.rakuten.co.jp/" rel="noopener" target="_blank">ラクヨコを開く</a></p>
+</section>
+</main>
+<footer class="site-foot">
+  <p><span class="pr-tag">PR</span>リンク先で購入があると、運営者に楽天アフィリエイトの報酬が発生します。</p>
+  <p>楽天グループ株式会社とは関係のない非公式ツールです。価格・在庫・キャンペーン条件は2026年09月16日 07:11時点の情報です。購入前にリンク先と公式ページで確認してください。</p>
+  <p><a href="https://webservice.rakuten.co.jp/" rel="noopener" target="_blank">Supported by Rakuten Developers</a></p>
+</footer>
+<script src="assets/tools.js?v=eeadcb46" defer></script>
+</body>
+</html>

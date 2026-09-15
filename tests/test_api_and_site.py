@@ -60,6 +60,13 @@ def test_client_raises_with_api_error_detail():
         make_client(session).search(keyword="x")
 
 
+def test_client_reads_new_error_format():
+    payload = {"errors": {"errorCode": 403, "errorMessage": "REQUEST_CONTEXT_BODY_HTTP_REFERRER_MISSING"}}
+    session = FakeSession([FakeResponse(payload, status=403)])
+    with pytest.raises(RakutenApiError, match="REFERRER_MISSING"):
+        make_client(session).search(keyword="x")
+
+
 def test_client_requires_keys_and_site_url():
     with pytest.raises(RakutenApiError, match="SITE_URL"):
         RakutenClient(app_id="app", access_key="", affiliate_id=None, referer=None)

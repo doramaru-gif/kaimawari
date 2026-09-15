@@ -27,9 +27,18 @@ def is_eligible(item: dict, min_per_shop: int, min_reviews: int = 0) -> bool:
     )
 
 
+PRIOR_RATING = 4.3   # 楽天の1,000円台商品のだいたいの平均
+PRIOR_WEIGHT = 100   # この件数ぶん平均に寄せる。★5.0でも数十件なら上位に来すぎない
+
+
+def weighted_rating(item: dict) -> float:
+    count = item.get("review_count", 0)
+    return (item.get("review_average", 0) * count + PRIOR_RATING * PRIOR_WEIGHT) / (count + PRIOR_WEIGHT)
+
+
 STRATEGIES = {
     "cheapest": lambda it: (price_with_tax(it), -it.get("review_count", 0)),
-    "reviewed": lambda it: (-it.get("review_average", 0), -it.get("review_count", 0), price_with_tax(it)),
+    "reviewed": lambda it: (-weighted_rating(it), price_with_tax(it)),
 }
 
 

@@ -17,6 +17,16 @@ class RakutenApiError(Exception):
     pass
 
 
+def _error_detail(data: dict) -> str:
+    """旧形式 {error, error_description} と新形式 {errors: {errorCode, errorMessage}} の両方から理由を取り出す"""
+    errors = data.get("errors")
+    if isinstance(errors, dict):
+        return str(errors.get("errorMessage", ""))
+    if isinstance(errors, list) and errors and isinstance(errors[0], dict):
+        return str(errors[0].get("errorMessage", ""))
+    return f"{data.get('error', '')}: {data.get('error_description', '')}".strip(": ")
+
+
 def parse_items(data: dict) -> list[dict]:
     """APIレスポンスを扱いやすい形にそろえる（formatVersion 1 と 2 の両方に対応）"""
     raw = data.get("Items") or data.get("items") or []
@@ -90,9 +100,8 @@ class RakutenClient:
                 data = res.json()
             except ValueError:
                 data = {}
-            if res.status_code != 200 or "error" in data:
-                detail = f"{data.get('error', '')}: {data.get('error_description', '')}".strip(": ")
-                raise RakutenApiError(f"HTTP {res.status_code} {detail}".strip())
+            if res.status_code != 200 or "error" in data or "errors" in data:
+                raise RakutenApiError(f"HTTP {res.status_code} {_error_detail(data)}".strip())
             return parse_items(data)
 
         raise RakutenApiError(f"HTTP {res.status_code} が{MAX_RETRIES}回続いたため中断しました")
