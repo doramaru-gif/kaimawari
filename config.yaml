@@ -26,15 +26,16 @@ search:
   min_review_count: 30
   hits: 30
   ng_keyword: ふるさと納税 定期便 予約
+  # genre_id は楽天市場ジャンル検索API（IchibaGenre/Search）で確認した値。キーワードだけだと別カテゴリの商品が混ざる
   queries:
-    - {label: 日用品, keyword: "1000円ポッキリ 日用品"}
-    - {label: 食品, keyword: "1000円ポッキリ 食品"}
-    - {label: 飲料, keyword: "1000円ポッキリ お茶"}
-    - {label: スイーツ, keyword: "1000円ポッキリ スイーツ"}
-    - {label: コスメ, keyword: "1000円ポッキリ スキンケア"}
-    - {label: キッチン, keyword: "1000円ポッキリ キッチン"}
-    - {label: ペット, keyword: "1000円ポッキリ ペット"}
-    - {label: 文具, keyword: "1000円ポッキリ 文房具"}
+    - {label: 日用品, keyword: "1000円ポッキリ", genre_id: 568199}   # 日用品雑貨・文房具・手芸 > 日用消耗品
+    - {label: 食品, keyword: "1000円ポッキリ", genre_id: 100227}     # 食品
+    - {label: 飲料, keyword: "1000円ポッキリ", genre_id: 100316}     # 水・ソフトドリンク
+    - {label: スイーツ, keyword: "1000円ポッキリ", genre_id: 551167} # スイーツ・お菓子
+    - {label: コスメ, keyword: "1000円ポッキリ", genre_id: 100939}   # 美容・コスメ・香水
+    - {label: キッチン, keyword: "1000円ポッキリ", genre_id: 558944} # キッチン用品・食器・調理器具
+    - {label: ペット, keyword: "1000円ポッキリ", genre_id: 101213}   # ペット・ペットグッズ
+    - {label: 文具, keyword: "1000円ポッキリ", genre_id: 100901}     # 日用品雑貨・文房具・手芸 > 文房具・事務用品
 
 rakuyoko:
   affiliate_url: ""         # 楽天アフィリエイトのリンク作成で作ったラクヨコTOPのリンク。空なら通常リンク

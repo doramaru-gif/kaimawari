@@ -38,6 +38,23 @@ def apply_next_event(config: dict, now: datetime) -> None:
         config["marathon"]["point_cap"] = event.point_cap
 
 
+def build_search_params(search: dict, query: dict) -> dict:
+    """1枠ぶんの商品検索パラメータ。genre_id があればジャンルで絞り、別カテゴリの商品が混ざらないようにする"""
+    params = {
+        "keyword": query["keyword"],
+        "minPrice": search["min_price"],
+        "maxPrice": search["max_price"],
+        "postageFlag": 1,
+        "availability": 1,
+        "hits": search["hits"],
+        "sort": "-reviewCount",
+        "NGKeyword": search["ng_keyword"],
+    }
+    if query.get("genre_id"):
+        params["genreId"] = int(query["genre_id"])
+    return params
+
+
 def collect_candidates(config: dict, demo: bool) -> list[dict]:
     search = config["search"]
     if demo:
@@ -57,16 +74,7 @@ def collect_candidates(config: dict, demo: bool) -> list[dict]:
             if demo:
                 items = parse_items(fixture.get(label, {}))
             else:
-                items = client.search(
-                    keyword=query["keyword"],
-                    minPrice=search["min_price"],
-                    maxPrice=search["max_price"],
-                    postageFlag=1,
-                    availability=1,
-                    hits=search["hits"],
-                    sort="-reviewCount",
-                    NGKeyword=search["ng_keyword"],
-                )
+                items = client.search(**build_search_params(search, query))
         except RakutenApiError as err:
             log.error("%s の取得に失敗: %s", label, err)
             continue

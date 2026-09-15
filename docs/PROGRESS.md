@@ -48,6 +48,16 @@
 - [x] Threads 下書き：リンク付きは3本（開始直後・中日・ラクヨコ）、他は問いかけ＋プロフィール誘導。topic_tag を付与
 - [x] 集客プラン（artifact）：docs/promotion-plan.html
 
+## 2026-09-16 本番公開
+- [x] GitHub：doramaru-gif/kaimawari（Public、Pages＝GitHub Actions）。PCは GitHub CLI（%LOCALAPPDATA%\gh-cli、ポータブル版）でログイン済み、git は gh の認証を使う
+- [x] 楽天：アプリ登録済み（許可サイト doramaru-gif.github.io、Ichiba API スコープ追加済み）。.env に3値
+- [x] 実データで初回生成（8検索・240件）→ push → https://doramaru-gif.github.io/kaimawari/ が HTTP 200
+- [x] 楽天の新しいエラー形式（errors.errorMessage）に対応。レビュー順は件数で重み付けした評価に変更
+- [x] タスクスケジューラ登録：kaimawari-daily（毎日05:30）、kaimawari-publish（10分おき。Threads 未設定の間は確認だけ）
+- [ ] Threads（③）：未着手。ユーザーはスマホのみ・PCのChromeはMeta未ログイン。1画面ずつ一緒に進める
+- [x] 品質：キーワード検索だけだと「ペット」「飲料」枠に別カテゴリの商品が入っていた → 楽天ジャンル検索APIで確認した genreId で各枠を絞り込み（config.yaml の queries.genre_id）
+- [ ] 任意：「初回購入限定」の商品は購入済みの人が買えないので、NGKeyword での除外を検討
+
 ## 残り（ユーザーの設定待ち。コード側の作業はなし）
 - 実データでの初回実行（main.py → queue_cli.py draft → 承認 → publish_due.py）
 - 9月の回（9/19 20:00開始）に間に合わせるには、9/18 05:30 の run_daily より前に下の1〜5を終える
