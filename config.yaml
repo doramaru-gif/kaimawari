@@ -1,0 +1,49 @@
+site:
+  name: 買いまわり帳
+  out_dir: dist
+
+marathon:
+  shops_target: 10
+  min_per_shop: 1000        # 1ショップ合計1,000円（税込）以上。送料は含まない
+  point_cap: 7000           # marathon_events が無いときの既定値
+  next_period: "開催予定は告知ページで確認してください"
+  guide_url: https://event.rakuten.co.jp/campaign/point-up/marathon/guide/
+
+# 開催予定。サイトの「次回」表示と、Threads 下書きの投稿枠に使う。告知が出たら追記・修正する
+marathon_events:
+  - name: 2026年9月 お買い物マラソン
+    start: "2026-09-19T20:00"
+    end: "2026-09-24T01:59"
+    point_cap: 7000
+  - name: 2026年10月 お買い物マラソン
+    start: "2026-10-04T20:00"
+    end: "2026-10-09T01:59"
+    point_cap: 7000         # 告知で要確認
+
+search:
+  min_price: 1000
+  max_price: 1380
+  min_review_count: 30
+  hits: 30
+  ng_keyword: ふるさと納税 定期便 予約
+  queries:
+    - {label: 日用品, keyword: "1000円ポッキリ 日用品"}
+    - {label: 食品, keyword: "1000円ポッキリ 食品"}
+    - {label: 飲料, keyword: "1000円ポッキリ お茶"}
+    - {label: スイーツ, keyword: "1000円ポッキリ スイーツ"}
+    - {label: コスメ, keyword: "1000円ポッキリ スキンケア"}
+    - {label: キッチン, keyword: "1000円ポッキリ キッチン"}
+    - {label: ペット, keyword: "1000円ポッキリ ペット"}
+    - {label: 文具, keyword: "1000円ポッキリ 文房具"}
+
+rakuyoko:
+  affiliate_url: ""         # 楽天アフィリエイトのリンク作成で作ったラクヨコTOPのリンク。空なら通常リンク
+  min_order: 2100
+  max_order: 16666
+  example_prices: [1990, 2490, 3980, 1290, 4980, 2980, 890, 1580]
+
+threads:
+  review_port: 8766
+  draft_horizon_hours: 36     # 予約時刻がこの時間内に来る枠だけ下書きを作る（数字を新しく保つ）
+  publish_grace_minutes: 180  # 予約時刻からこれ以上過ぎた承認済みは投稿せず「期限切れ」にする
+  token_refresh_days: 7       # 長期トークン（60日）をこの間隔で更新する

@@ -1,0 +1,69 @@
+# 進捗メモ（セッションが切れたらここから再開）
+
+最終更新: 2026-09-15
+
+## 方針（ユーザー合意済み）
+- ① 承認なし・費用なし → 実装：買いまわり帳サイト（楽天市場API → 静的サイト、毎朝自動）
+- ② 承認のみ → Threads のマラソン投稿に絞る：下書き自動生成 → 承認デスクで承認 → 予約時刻に自動投稿
+- ラクヨコは規約（第13条7号・20号）で自動取得・転載禁止。データは楽天市場APIのみ
+
+## 完了
+- [x] ① サイト生成（main.py / src/rakuten_api.py / planner.py / site_builder.py / assets）
+- [x] ① テスト、デモ書き出し（dist-demo）、ブラウザで表示確認
+- [x] ② モック（artifact: https://claude.ai/code/artifact/073fa1e9-f4a9-42c0-976d-e6b7fc6526af）
+
+## ② 本実装（進行中）
+- [x] src/schedule.py … 開催予定と投稿枠（前夜・1時間前・開始直後・中日・ラクヨコ・最終日・残り2時間）
+- [x] src/checks.py … 公開前チェック（PR表記・500字・誇大表現・リンク数・出典）
+- [x] src/drafts.py … テンプレートで下書き生成（API費用なし）
+- [x] src/queue_store.py … data/queue.json（ロック付き）
+- [x] src/threads_api.py … 投稿（コンテナ→30秒待ち→公開）、長期トークン更新
+- [x] src/publisher.py … 予約時刻が来た承認済みだけ投稿。期限切れ・二重投稿防止
+- [x] src/review_api.py / review_server.py / src/review_ui … 承認デスク（127.0.0.1:8766）
+- [x] queue_cli.py / publish_due.py / run_publish.bat
+- [x] src/review_ui（index.html / desk.css / app.js）
+- [x] テスト全通過（41件）、デモ下書き7件の生成、publish_due --dry-run
+- [x] デモキューで承認デスクをブラウザ確認（表示・承認の保存・自動で次へ）
+- [x] ローカル以外からのリクエスト拒否を確認（独自ヘッダなし／他オリジン／他ホスト → 403）
+
+## 2026-09-15 再開後に追加
+- [x] setup_check.py … .env・楽天API・Threads（me / 投稿枠）・開催予定・Git・タスク登録をまとめて確認
+- [x] docs/SETUP.md … ユーザーが上から順に進める手順書
+- [x] .github/workflows/pages.yml … Pages は dist/ から直接公開できないため Actions で公開
+- [x] .env を .env.example から作成（値は空）
+
+## 2026-09-16 追加（ユーザー設定待ちの間に進めた分）
+- [x] src/og_image.py … OGP画像（今日のプランの数字入り／ラクヨコ計算機）。Threads のリンクカードに出る。URLに ?v=日付
+- [x] canonical・og:*・twitter:card・favicon.svg・sitemap.xml（SITE_URL がある時だけ絶対URL系を出す）
+- [x] src/history.py … 毎朝の選定結果を data/history.json に記録（180日）→ サイトに「毎朝の選定記録」表
+- [x] .env 確認：SITE_URL はサンプルのまま、ほかは空（ユーザー設定はまだ）
+
+## 2026-09-16 ユーザー目線の検証で直したこと
+- [x] スマホで横にはみ出す（記録表の min-width が main グリッドを540pxに広げていた）→ main > * { min-width: 0 }
+- [x] スタンプカードは「予定の枠」にし、各商品の「買った」チェックで押印（localStorage、2つの並べ方で共有）
+- [x] 冒頭に「先にエントリーする」ボタン（公式マラソンページ）
+- [x] CSS/JS の URL に中身のハッシュ（GitHub Pages のキャッシュで古い JS が動く問題。検証中に実際に発生）
+- [x] ラクヨコ計算機：「例を消す」、スマホで判定が見えるバー（入力中も画面下に表示）
+- [x] 文字サイズとタップ領域、見出しが語の途中で折り返さないように
+- [x] Threads 下書き：リンク付きは3本（開始直後・中日・ラクヨコ）、他は問いかけ＋プロフィール誘導。topic_tag を付与
+- [x] 集客プラン（artifact）：docs/promotion-plan.html
+
+## 残り（ユーザーの設定待ち。コード側の作業はなし）
+- 実データでの初回実行（main.py → queue_cli.py draft → 承認 → publish_due.py）
+- 9月の回（9/19 20:00開始）に間に合わせるには、9/18 05:30 の run_daily より前に下の1〜5を終える
+- [x] CLAUDE.md 更新
+
+## ユーザー側の作業待ち（こちらではできない）
+1. 楽天ウェブサービスのアプリ登録 → .env（RAKUTEN_APP_ID / RAKUTEN_ACCESS_KEY / RAKUTEN_AFFILIATE_ID / SITE_URL）
+2. 「許可されたWebサイト」に SITE_URL を登録
+3. GitHub リポジトリ作成と Pages 設定（dist/ を公開）
+4. Threads 長期アクセストークンとユーザーID → .env（THREADS_ACCESS_TOKEN / THREADS_USER_ID）
+5. タスクスケジューラ登録（CLAUDE.md の schtasks 2本）
+
+## 再開時の確認コマンド
+```bash
+python -m pytest -q
+python main.py --demo
+python queue_cli.py draft --demo
+python review_server.py --demo
+```

@@ -1,0 +1,28 @@
+# dist/ を GitHub Pages に公開する（run_daily.bat が dist/ を push すると動く）
+# 初回だけ Settings → Pages → Source を「GitHub Actions」にする
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["dist/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - uses: actions/deploy-pages@v4

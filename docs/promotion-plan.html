@@ -1,0 +1,375 @@
+<title>買いまわり帳 集客プラン</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=IBM+Plex+Mono:wght@500&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root {
+  --ground: #EEF2EF;
+  --paper: #FBFCFA;
+  --ink: #1B2623;
+  --muted: #56645F;
+  --line: #CFD8D3;
+  --stamp: #3246A6;
+  --stamp-soft: #E2E6F6;
+  --on-stamp: #FFFFFF;
+  --ok: #2A7654;
+  --ok-soft: #DAEEE3;
+  --warn: #9A600C;
+  --warn-soft: #F4E8D2;
+  --bad: #B03A2E;
+  --bad-soft: #F5DDD9;
+  --font-display: "Dela Gothic One", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-body: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #121917; --paper: #1A2320; --ink: #E4EBE8; --muted: #98A7A1; --line: #2D3935;
+    --stamp: #93A5FF; --stamp-soft: #242C52; --on-stamp: #10162E;
+    --ok: #6BC398; --ok-soft: #1C3A2C; --warn: #E2AA52; --warn-soft: #3A2E1A; --bad: #EF8B80; --bad-soft: #402320;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #121917; --paper: #1A2320; --ink: #E4EBE8; --muted: #98A7A1; --line: #2D3935;
+  --stamp: #93A5FF; --stamp-soft: #242C52; --on-stamp: #10162E;
+  --ok: #6BC398; --ok-soft: #1C3A2C; --warn: #E2AA52; --warn-soft: #3A2E1A; --bad: #EF8B80; --bad-soft: #402320;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.8; }
+a { color: var(--stamp); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+.page { max-width: 980px; margin: 0 auto; padding: 32px 20px 72px; display: grid; gap: 56px; }
+.page > * { min-width: 0; }
+
+/* 冒頭 */
+.head { display: grid; gap: 14px; }
+.eyebrow { margin: 0; font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.05em; color: var(--stamp); }
+h1 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(28px, 5vw, 42px); line-height: 1.3; text-wrap: balance; }
+.lede { margin: 0; max-width: 40em; color: var(--muted); font-size: 16px; }
+.nowrap { white-space: nowrap; }
+
+.events { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.event { padding: 12px 16px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; display: grid; gap: 2px; }
+.event b { font-size: 14px; }
+.event .mono { font-size: 13px; color: var(--ink); }
+.event small { font-size: 12px; color: var(--muted); }
+.event.is-next { border-color: var(--stamp); box-shadow: inset 0 0 0 1px var(--stamp); }
+.event.is-next small { color: var(--stamp); font-weight: 700; }
+
+/* 見出し */
+h2 { margin: 0 0 6px; font-family: var(--font-display); font-weight: 400; font-size: 24px; line-height: 1.4; text-wrap: balance; }
+h3 { margin: 0; font-size: 16px; font-weight: 700; }
+.section { display: grid; gap: 16px; }
+.section-lede { margin: 0; color: var(--muted); max-width: 42em; }
+.label { display: inline-block; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.05em; color: var(--stamp); }
+
+/* 表 */
+.table-wrap { overflow-x: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { padding: 12px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.7; }
+tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+thead th { font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0.04em; background: var(--ground); }
+tbody th { font-weight: 700; width: 24%; }
+td.when { font-family: var(--font-mono); white-space: nowrap; font-size: 13px; }
+
+.pill { display: inline-block; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 700; line-height: 1.9; white-space: nowrap; }
+.pill.auto { background: var(--stamp-soft); color: var(--stamp); }
+.pill.approve { background: var(--ok-soft); color: var(--ok); }
+.pill.you { background: var(--warn-soft); color: var(--warn); }
+.pill.fixed { background: var(--ok-soft); color: var(--ok); }
+.pill.open { background: var(--warn-soft); color: var(--warn); }
+
+.checks-ok { margin: 0; padding: 14px 18px; background: var(--paper); border: 1px dashed var(--line); border-radius: 12px; font-size: 14px; color: var(--muted); }
+.checks-ok b { color: var(--ink); }
+
+/* 導線 */
+.flow { display: grid; gap: 10px; }
+.flow-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.node { padding: 8px 14px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; font-size: 14px; font-weight: 500; }
+.node.is-site { background: var(--stamp); border-color: var(--stamp); color: var(--on-stamp); font-weight: 700; }
+.node.is-goal { border-color: var(--ok); color: var(--ok); font-weight: 700; }
+.arrow { color: var(--muted); font-family: var(--font-mono); }
+.flow-note { margin: 0; font-size: 13px; color: var(--muted); }
+
+/* チャネル */
+.channels { display: grid; gap: 14px; }
+.channel { padding: 20px 22px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; display: grid; gap: 10px; }
+.channel.is-main { border-color: var(--stamp); }
+.channel-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; }
+.channel-head .meta { display: flex; gap: 6px; flex-wrap: wrap; }
+.channel ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.channel li { font-size: 14px; }
+.channel .why { margin: 0; font-size: 13px; color: var(--muted); }
+
+.donts { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+.donts li { padding: 12px 16px; background: var(--bad-soft); border-radius: 10px; font-size: 14px; }
+.donts b { display: block; color: var(--bad); font-size: 13px; }
+
+/* コピー素材 */
+.copies { display: grid; gap: 14px; }
+.copy { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--ground); }
+.copy-head span { font-size: 13px; font-weight: 700; }
+.copy-head small { font-weight: 400; color: var(--muted); margin-left: 8px; }
+.copy-btn { font: inherit; font-size: 13px; font-weight: 700; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--stamp); background: transparent; color: var(--stamp); cursor: pointer; min-height: 32px; }
+.copy-btn.is-done { background: var(--stamp); color: var(--on-stamp); }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-body); font-size: 14px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.measure { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; max-width: 46em; }
+
+.sources { margin: 0; padding-left: 1.2em; font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+.foot { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+
+@media (max-width: 560px) {
+  .page { padding-top: 24px; gap: 44px; }
+  th, td { padding: 10px 12px; }
+}
+</style>
+
+<div class="page">
+  <header class="head">
+    <p class="eyebrow">買いまわり帳 / 2026年9月16日時点</p>
+    <h1>買いまわり帳 <span class="nowrap">集客プラン</span></h1>
+    <p class="lede">お買い物マラソンのたびに出る「あと何ショップ？ 1,000円で何を買う？」に、毎朝答えるサイトです。これを Threads・検索・note で届けます。広告費はゼロで、人の作業は承認と返信だけにします。</p>
+    <ul class="events" aria-label="直近の開催予定">
+      <li class="event is-next"><small>次の本番</small><b>9月 お買い物マラソン</b><span class="mono">9/19(土) 20:00 → 9/24(木) 01:59</span></li>
+      <li class="event"><small>10月は3回開催の傾向</small><b>10月 1回目</b><span class="mono">10/4(日) 20:00 → 10/9(金) 01:59</span></li>
+      <li class="event"><small>予定・告知で確認</small><b>楽天ブラックフライデー</b><span class="mono">11/20(金) 20:00 →</span></li>
+    </ul>
+  </header>
+
+  <section class="section" aria-labelledby="verify">
+    <div>
+      <span class="label">1 / 公開前の検証</span>
+      <h2 id="verify">ユーザー目線で使って、直したこと</h2>
+      <p class="section-lede">3人を想定して、スマホ（幅375px）とPCで実際に操作しました。Threads から来たポイ活の人、楽天をよく使う人、ラクヨコを初めて使う人です。見つかった問題はすべて直してあります。</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">見つけた問題</th><th scope="col">起きていたこと</th><th scope="col">直した内容</th><th scope="col">状態</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">スマホで横にはみ出す</th><td>記録表の最小幅に引っぱられ、本文が540px幅に広がって見出しや金額が右で切れていた</td><td>表だけを横スクロールにして、本文は画面幅に収めた（375pxで確認）</td><td><span class="pill fixed">修正済み</span></td></tr>
+          <tr><th scope="row">スタンプカードが最初から 10/10</th><td>まだ何も買っていないのに、達成済みに見えた</td><td>各商品に「買った」ボタンを付けた。押した枠にスタンプが付き、この端末に保存される（再読み込み後も残り、2つの並べ方で共有）</td><td><span class="pill fixed">修正済み</span></td></tr>
+          <tr><th scope="row">エントリーへの入口がない</th><td>マラソンで一番多い失敗なのに、ページから公式ページへ行けなかった</td><td>冒頭に「先にエントリーする」ボタンを置いた</td><td><span class="pill fixed">修正済み</span></td></tr>
+          <tr><th scope="row">更新後に古い JS が動く</th><td>ブラウザが古い tools.js を使い、新しいボタンが反応しなかった（検証中に実際に起きた）</td><td>CSS・JS の URL に中身のハッシュを付け、更新したら必ず読み直すようにした</td><td><span class="pill fixed">修正済み</span></td></tr>
+          <tr><th scope="row">ラクヨコ計算機の結果が見えない</th><td>スマホでは結果が入力欄の下にあり、金額を変えるたびにスクロールが必要だった</td><td>入力中も画面下に判定（「1回で注文できます」など）が見えるバーを追加した</td><td><span class="pill fixed">修正済み</span></td></tr>
+          <tr><th scope="row">例の金額を消すのが手間</th><td>自分の金額を入れる前に、削除を8回押す必要があった</td><td>「例を消す」ボタンを追加した</td><td><span class="pill fixed">修正済み</span></td></tr>
+          <tr><th scope="row">文字とボタンが小さい</th><td>スタンプの文字が9px、商品名のリンクは高さ24px</td><td>文字を10pxにし、ボタンのタップ領域を36〜44pxに広げた</td><td><span class="pill fixed">修正済み</span></td></tr>
+          <tr><th scope="row">見出しが語の途中で折り返す</th><td>「最短ル／ート」「送料無料の枠に収／める」のように切れていた</td><td>語の途中では折り返さないようにした</td><td><span class="pill fixed">修正済み</span></td></tr>
+          <tr><th scope="row">実データでの見え方</th><td>商品画像や長い商品名は、サンプルデータでは確かめられない</td><td>楽天APIキーを設定したあと、最初の実データでもう一度確認する</td><td><span class="pill open">キー設定後</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="checks-ok"><b>問題なかったこと：</b>PR表記は最初の画面に入る。商品リンクはすべて新しいタブで開き、広告リンクの属性（rel="sponsored"）が付く。Webフォントの読み込みは約115KB。ラクヨコ計算機の分割結果は正しい（例の合計 ¥20,180 → ¥16,420 と ¥3,760 の2回）。</p>
+  </section>
+
+  <section class="section" aria-labelledby="who">
+    <div>
+      <span class="label">2 / 相手と約束</span>
+      <h2 id="who">誰に、何を約束するか</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><th scope="row">届けたい人</th><td>お買い物マラソンに毎回参加する人です。開始直前から期間中に、スマホで「あと何ショップ」「1,000円ポッキリで何を買う」を探しています。</td></tr>
+          <tr><th scope="row">約束</th><td>送料込み・1,000円台で、別々の10ショップを毎朝選び直す。買ったらスタンプが埋まり、本命の買い物を足したポイントは計算機で出せる。</td></tr>
+          <tr><th scope="row">届けるタイミング</th><td>需要はマラソン期間に集中します。そのため投稿も、開始前夜から最終日に寄せます。期間外は検索と固定投稿に任せます。</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flow" aria-label="集客の導線">
+      <div class="flow-row"><span class="node">Threads の投稿</span><span class="arrow">→</span><span class="node">プロフィールのリンク／リンクカード</span><span class="arrow">→</span><span class="node is-site">買いまわり帳</span><span class="arrow">→</span><span class="node is-goal">楽天市場で購入（報酬）</span></div>
+      <div class="flow-row"><span class="node">Google 検索</span><span class="node">note 記事</span><span class="node">Pinterest</span><span class="arrow">→</span><span class="node is-site">買いまわり帳</span></div>
+      <p class="flow-note">報酬は、買いまわり帳のリンクから楽天に入った買い物に付きます。どのチャネルも、最後はサイトに集めます。</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="channels">
+    <div>
+      <span class="label">3 / チャネル別の施策</span>
+      <h2 id="channels">どこで、どう届けるか</h2>
+      <p class="section-lede">優先度の順に並べています。<span class="pill auto">自動</span> は仕組みが動かすもの、<span class="pill approve">承認</span> は承認デスクで押すだけのもの、<span class="pill you">あなた</span> は手で行うものです。</p>
+    </div>
+    <div class="channels">
+      <article class="channel is-main">
+        <div class="channel-head"><h3>Threads（最優先）</h3><div class="meta"><span class="pill auto">下書き・投稿は自動</span><span class="pill approve">承認</span><span class="pill you">返信だけ</span></div></div>
+        <ul>
+          <li>1回のマラソンで7本出す：前夜・開始1時間前・開始直後・中日・ラクヨコ・最終日・残り2時間</li>
+          <li><b>リンク付きは3本だけ</b>（開始直後・中日・ラクヨコ）。残りの4本は問いかけで終え、プロフィールのリンクへ誘導する</li>
+          <li>トピックタグは1投稿に1つ：「楽天お買い物マラソン」、ラクヨコの投稿は「楽天ラクヨコ」</li>
+          <li><b>投稿後30〜45分に来た返信には、すぐ返す</b>。ここだけはあなたの作業</li>
+          <li>プロフィールにサイトのURLを置き、使い方を説明する投稿を固定する（下のコピー素材を使う）</li>
+        </ul>
+        <p class="why">理由：Threads は「いいね」より返信（会話）を重く見て広げます。本文にリンクがある投稿は反応が30〜50%落ちるという報告もあります。</p>
+      </article>
+      <article class="channel">
+        <div class="channel-head"><h3>Google 検索（中長期）</h3><div class="meta"><span class="pill auto">毎朝の更新は自動</span><span class="pill you">登録だけ 10分</span></div></div>
+        <ul>
+          <li>Search Console にサイトを登録し、sitemap.xml を送信する</li>
+          <li>ページは増やさない。同じ2ページを毎朝更新する（似たページの量産は、Google のスパム対策で落とされている）</li>
+          <li>「毎朝の選定記録」は、ほかのサイトにない一次データ。マラソンの前後で合計がどう動くかを積み上げる</li>
+        </ul>
+        <p class="why">期待値：新しいサイトが検索で上がるには数か月かかります。マラソンは毎月あるので、同じページに何度も戻ってくる需要をじっくり取りにいきます。</p>
+      </article>
+      <article class="channel">
+        <div class="channel-head"><h3>note（記事1本）</h3><div class="meta"><span class="pill you">最初に30分</span></div></div>
+        <ul>
+          <li>「1,000円台で10ショップ埋める組み方」を1本だけ書き、毎朝更新されるサイトへつなぐ</li>
+          <li>冒頭とリンクのすぐ近くの両方に PR 表記を入れる（note の運用ルール）</li>
+          <li>毎回書き直さない。数字はサイト側で毎朝更新されるので、記事は手順の説明にとどめる</li>
+        </ul>
+      </article>
+      <article class="channel">
+        <div class="channel-head"><h3>Pinterest（任意）</h3><div class="meta"><span class="pill you">1回5分</span></div></div>
+        <ul>
+          <li>サイトが毎朝作るリンクカード用の画像（今日の合計とスタンプカード）を、マラソンごとに1枚ピンする</li>
+          <li>自分で作った画像なので、楽天の商品画像を加工することにはならない。説明文に #PR を入れる</li>
+        </ul>
+      </article>
+      <article class="channel">
+        <div class="channel-head"><h3>X（任意・低コスト）</h3><div class="meta"><span class="pill you">必要なら</span></div></div>
+        <ul>
+          <li>出すのはリンクなしの投稿だけにする。API はリンク付きが1件 $0.20、リンクなしは $0.015</li>
+          <li>サイトへの誘導はプロフィールのリンクで行う</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="donts">
+    <div>
+      <span class="label">4 / やらないこと</span>
+      <h2 id="donts">規約と信用を守るために、やらないこと</h2>
+    </div>
+    <ul class="donts">
+      <li><b>ラクヨコの規約違反</b>商品ページの自動取得や、商品画像・データの転載（利用規約 第13条）</li>
+      <li><b>リンクを送る場所</b>LINE・Discord・DM・メールにアフィリエイトリンクを載せる</li>
+      <li><b>楽天ROOMの自動化</b>プログラムで投稿すること自体が ROOM の規約で禁止</li>
+      <li><b>画像の流用</b>楽天のページをスクリーンショットして使う</li>
+      <li><b>自己購入</b>自分や家族が、自分のリンクを経由して買う</li>
+      <li><b>断定・誇大表現</b>「絶対」「最安」など。承認デスクが自動で止める</li>
+      <li><b>リンクの貼り回り</b>Yahoo!知恵袋などへの書き込み。楽天アフィリエイトの認定SNSの外で、スパム扱いになる</li>
+    </ul>
+  </section>
+
+  <section class="section" aria-labelledby="calendar">
+    <div>
+      <span class="label">5 / 実行カレンダー</span>
+      <h2 id="calendar">9月の回までにやること</h2>
+      <p class="section-lede">上から時刻の順に並べています。前夜告知の枠は 9/18 21:00 なので、あなたの設定はそれより前に終える必要があります。</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">いつ</th><th scope="col">やること</th><th scope="col">担当</th></tr></thead>
+        <tbody>
+          <tr><td class="when">今日〜9/17</td><td>楽天ウェブサービス・Threads・GitHub の設定をして、<code>python setup_check.py</code> の ✕ をなくす（手順は docs/SETUP.md）</td><td><span class="pill you">あなた</span></td></tr>
+          <tr><td class="when">9/17</td><td>Threads のプロフィールを整えて固定投稿を出す。note 記事を公開し、Search Console に登録する（合わせて約1時間）</td><td><span class="pill you">あなた</span></td></tr>
+          <tr><td class="when">9/18 05:30</td><td>サイト更新、前夜告知の下書き作成</td><td><span class="pill auto">自動</span></td></tr>
+          <tr><td class="when">9/18 日中</td><td>承認デスクで前夜告知を承認する</td><td><span class="pill approve">承認</span></td></tr>
+          <tr><td class="when">9/18 21:00</td><td>前夜告知を投稿</td><td><span class="pill auto">自動</span></td></tr>
+          <tr><td class="when">9/19 05:30</td><td>「開始1時間前」「開始直後」の下書き作成。承認は 19:00 までに</td><td><span class="pill auto">自動</span> <span class="pill approve">承認</span></td></tr>
+          <tr><td class="when">9/19 20:05</td><td>開始直後の投稿（リンク付き）→ 30〜45分は返信に答える</td><td><span class="pill auto">自動</span> <span class="pill you">返信</span></td></tr>
+          <tr><td class="when">9/21〜9/23</td><td>中日・ラクヨコ・最終日・残り2時間の投稿を承認する</td><td><span class="pill approve">承認</span></td></tr>
+          <tr><td class="when">9/24 以降</td><td>結果を振り返り、次回に向けて1つだけ変える（下の「計測」参照）</td><td><span class="pill you">あなた</span></td></tr>
+          <tr><td class="when">告知が出たら</td><td>10月の残り2回の日程とボーナス上限を config.yaml に追記する（5分）</td><td><span class="pill you">あなた</span></td></tr>
+          <tr><td class="when">11/20〜</td><td>ブラックフライデーはマラソンとルールが違う。扱うなら専用の下書きテンプレートを作る</td><td><span class="pill you">検討</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="copies">
+    <div>
+      <span class="label">6 / コピー素材</span>
+      <h2 id="copies">そのまま使える文面</h2>
+      <p class="section-lede">どれも承認デスクのチェック（PR表記・断定表現なし・500字以内）を通る書き方です。「○○」の部分は、その日の数字に置き換えてください。</p>
+    </div>
+    <div class="copies">
+      <div class="copy"><div class="copy-head"><span>Threads プロフィール<small>150字以内</small></span><button type="button" class="copy-btn" data-copy>コピー</button></div>
+<pre>楽天お買い物マラソンの買いまわりを、送料込み1,000円台で10ショップ埋めるプランを毎朝更新。ラクヨコの送料無料ライン計算機もあります。楽天アフィリエイトを利用しています（PR）</pre></div>
+      <div class="copy"><div class="copy-head"><span>Threads 固定投稿</span><button type="button" class="copy-btn" data-copy>コピー</button></div>
+<pre>買いまわり帳の使い方。
+
+① 先にマラソンにエントリー
+② 今日の10ショップから、どうせ買う物を選ぶ
+③ 買ったら「買った」を押す（スタンプが埋まる）
+
+本命の買い物は、10ショップ埋めてから。
+上限まであといくらかは、計算機で出せる。
+
+足りない機能があれば返信で教えて。
+#PR</pre></div>
+      <div class="copy"><div class="copy-head"><span>note 記事のタイトルと構成</span><button type="button" class="copy-btn" data-copy>コピー</button></div>
+<pre>タイトル：楽天お買い物マラソン、1,000円台で10ショップ埋める組み方（毎朝更新のプラン付き）
+
+冒頭：この記事には楽天アフィリエイトのリンクを含みます（PR）
+
+1. 買いまわりの数え方（1ショップ1,000円以上、送料は含まない、同じショップは1カウント）
+2. 送料込み1,000円台で埋めるのが早い理由
+3. 毎朝選び直している10ショップのプラン（リンク・PR表記）
+4. 本命の買い物を足したときのポイントと、上限の考え方
+5. よくある失敗：エントリー忘れ、送料で1,000円に届いた気になる</pre></div>
+      <div class="copy"><div class="copy-head"><span>Pinterest ピンの説明</span><button type="button" class="copy-btn" data-copy>コピー</button></div>
+<pre>楽天お買い物マラソンの買いまわり用。送料込み1,000円台で10ショップ埋めるプランを毎朝更新しています。#PR #楽天お買い物マラソン</pre></div>
+      <div class="copy"><div class="copy-head"><span>X 投稿（リンクなし）</span><button type="button" class="copy-btn" data-copy>コピー</button></div>
+<pre>楽天お買い物マラソン、送料込み1,000円台で10ショップ埋めると合計いくらになるか、毎朝計算してる。
+
+今朝は合計○○円、見込み○○pt。
+プランはプロフィールのリンクから。
+#PR</pre></div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="measure">
+    <div>
+      <span class="label">7 / 計測</span>
+      <h2 id="measure">毎回の振り返りで見るもの</h2>
+    </div>
+    <ul class="measure">
+      <li><b>楽天アフィリエイトのレポート</b>：クリック数と成果。成果が確定するのは翌々月です</li>
+      <li><b>Threads のインサイト</b>：投稿ごとの表示回数と返信数。リンク付き3本となし4本を比べる</li>
+      <li><b>Search Console</b>：表示回数と掲載順位、どんな検索語で出たか</li>
+      <li><b>サイトの訪問数</b>：GitHub Pages には解析がないので、今は取れていません。必要ならプライバシーに配慮した解析を足します</li>
+      <li><b>変え方</b>：1回目は基準を取る回にする。2回目からは「リンク付きの本数」「投稿時刻」などを1回に1つだけ変えて比べる</li>
+    </ul>
+  </section>
+
+  <section class="section" aria-labelledby="sources">
+    <h2 id="sources">出典</h2>
+    <ul class="sources">
+      <li><a href="https://tatap.jp/knowledge/how-to-extend-threads/" rel="noopener" target="_blank">Threads伸ばし方の完全ガイド（返信数優先のアルゴリズム）</a></li>
+      <li><a href="https://note.com/takeru_biz/n/n4e9e5b5d886d" rel="noopener" target="_blank">Threadsアルゴリズム（トピックタグは1つ、初動30〜45分）</a></li>
+      <li><a href="https://s--line.co.jp/threads-business-guide-2026/" rel="noopener" target="_blank">Threads企業活用ガイド2026（外部リンクの扱い）</a></li>
+      <li><a href="https://www.help-note.com/hc/ja/articles/34830599701913" rel="noopener" target="_blank">noteアフィリエイト（β）ご利用ガイドライン</a></li>
+      <li><a href="https://affiliate.rakuten.co.jp/guideline/rule/" rel="noopener" target="_blank">楽天アフィリエイトガイドライン</a></li>
+      <li><a href="https://event.rakuten.co.jp/campaign/point-up/marathon/guide/" rel="noopener" target="_blank">お買い物マラソン ガイド＆買いまわりルール</a></li>
+      <li><a href="https://www.r-zyunin.com/rakuten-sale-campaign/sale-calendar-campaign-list" rel="noopener" target="_blank">楽天セールカレンダー（2026年9〜11月の予定）</a></li>
+      <li><a href="https://docs.x.com/x-api/getting-started/pricing" rel="noopener" target="_blank">X API の従量課金</a></li>
+    </ul>
+    <p class="foot">10月2回目以降とブラックフライデーの日程は、各サイトの予想をもとにした予定です。公式の告知が出たら確認してください。</p>
+  </section>
+</div>
+
+<script>
+document.querySelectorAll('[data-copy]').forEach((button) => {
+  button.addEventListener('click', async () => {
+    const text = button.closest('.copy').querySelector('pre').textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      button.textContent = 'コピーしました';
+      button.classList.add('is-done');
+    } catch {
+      const range = document.createRange();
+      range.selectNodeContents(button.closest('.copy').querySelector('pre'));
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      button.textContent = '選択しました（Ctrl+C でコピー）';
+    }
+    setTimeout(() => { button.textContent = 'コピー'; button.classList.remove('is-done'); }, 2000);
+  });
+});
+</script>

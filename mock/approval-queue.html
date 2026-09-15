@@ -1,0 +1,412 @@
+<title>マラソン投稿デスク</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=JetBrains+Mono:wght@500&family=Murecho:wght@700&family=Yuji+Syuku&display=swap">
+<style>
+:root {
+  --ground: #E8ECF0;
+  --surface: #FFFFFF;
+  --sunken: #F2F4F7;
+  --ink: #151A21;
+  --muted: #5A6371;
+  --line: #D2D8DF;
+  --accent: #24407A;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #DDE4F2;
+  --seal: #C9452A;
+  --ok: #1D7549;
+  --ok-soft: #DAEEE2;
+  --warn: #8F5C08;
+  --warn-soft: #F3E7CF;
+  --block: #A3292B;
+  --block-soft: #F5DCDB;
+  --font-head: "Murecho", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-body: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-seal: "Yuji Syuku", "Hiragino Mincho ProN", "Yu Mincho", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #0F1318; --surface: #171C23; --sunken: #1D232C; --ink: #E3E7EC; --muted: #98A1AD;
+    --line: #2A313B; --accent: #9DB5EA; --accent-ink: #0D1526; --accent-soft: #1E2A44; --seal: #EE7D5E;
+    --ok: #63C293; --ok-soft: #173427; --warn: #E0AE55; --warn-soft: #352914; --block: #EE8784; --block-soft: #3C1F1F;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #0F1318; --surface: #171C23; --sunken: #1D232C; --ink: #E3E7EC; --muted: #98A1AD;
+  --line: #2A313B; --accent: #9DB5EA; --accent-ink: #0D1526; --accent-soft: #1E2A44; --seal: #EE7D5E;
+  --ok: #63C293; --ok-soft: #173427; --warn: #E0AE55; --warn-soft: #352914; --block: #EE8784; --block-soft: #3C1F1F;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.7; }
+button { font: inherit; color: inherit; }
+button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+.app { max-width: 1280px; margin: 0 auto; padding: 20px; display: grid; gap: 16px; }
+
+.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+.title { display: grid; gap: 2px; }
+.title h1 { margin: 0; font-family: var(--font-head); font-size: 22px; line-height: 1.3; }
+.title p { margin: 0; color: var(--muted); font-size: 13px; }
+.mock-tag { display: inline-block; margin-left: 8px; padding: 0 8px; border: 1px solid var(--warn); border-radius: 999px; color: var(--warn); font-family: var(--font-body); font-size: 11px; font-weight: 700; vertical-align: middle; }
+.counts { display: flex; gap: 8px; margin: 0; flex-wrap: wrap; }
+.count { display: grid; min-width: 88px; padding: 6px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.count dt { font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
+.count dd { margin: 0; font-family: var(--font-mono); font-size: 20px; line-height: 1.4; }
+.count.is-block dd { color: var(--block); }
+.count.is-done dd { color: var(--ok); }
+
+/* 期間タイムライン */
+.timeline { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 20px 10px; }
+.timeline-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.timeline-scroll { overflow-x: auto; }
+.track { position: relative; min-width: 720px; height: 92px; margin-top: 6px; }
+.period { position: absolute; top: 34px; height: 8px; border-radius: 999px; background: var(--accent-soft); }
+.axis { position: absolute; top: 37px; left: 0; right: 0; height: 2px; background: var(--line); }
+.day { position: absolute; top: 52px; translate: -50% 0; font-family: var(--font-mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.day::before { content: ""; position: absolute; left: 50%; top: -12px; width: 1px; height: 8px; background: var(--line); }
+.period-label { position: absolute; top: 74px; font-size: 11px; color: var(--accent); white-space: nowrap; }
+.tick { position: absolute; top: 4px; translate: -50% 0; display: grid; justify-items: center; gap: 2px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.tick-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 0 1.5px var(--muted); background: var(--sunken); margin-top: 22px; }
+.tick-time { position: absolute; top: 0; font-family: var(--font-mono); font-size: 10px; color: var(--muted); white-space: nowrap; }
+.tick[data-state="pending"] .tick-dot { box-shadow: 0 0 0 1.5px var(--accent); background: var(--accent-soft); }
+.tick[data-state="block"] .tick-dot { box-shadow: 0 0 0 1.5px var(--block); background: var(--block-soft); }
+.tick[data-state="approved"] .tick-dot { box-shadow: 0 0 0 1.5px var(--ok); background: var(--ok); }
+.tick[data-state="rejected"] .tick-dot { box-shadow: 0 0 0 1.5px var(--muted); background: var(--line); }
+.tick[aria-current="true"] .tick-dot { scale: 1.35; }
+.tick[aria-current="true"] .tick-time { color: var(--ink); font-weight: 700; }
+
+/* 3カラム */
+.desk { display: grid; grid-template-columns: 290px minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+.queue ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.q-item { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 8px; padding: 10px 12px; text-align: left; background: transparent; border: 1px solid transparent; border-radius: 10px; cursor: pointer; }
+.q-item:hover { background: var(--surface); }
+.q-item[aria-current="true"] { background: var(--surface); border-color: var(--line); }
+.q-time { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.q-kind { font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.q-text { grid-column: 1 / -1; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pill { grid-column: 1 / -1; justify-self: start; margin-top: 4px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 700; line-height: 1.8; }
+.pill.pending { background: var(--accent-soft); color: var(--accent); }
+.pill.block { background: var(--block-soft); color: var(--block); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.approved { background: var(--ok-soft); color: var(--ok); }
+.pill.rejected { background: var(--sunken); color: var(--muted); }
+
+.preview { position: relative; display: grid; gap: 16px; align-content: start; min-height: 440px; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.preview-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--muted); padding-right: 96px; }
+.preview-meta b { color: var(--ink); font-weight: 700; }
+.post { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; max-width: 540px; }
+.avatar { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; background: var(--ink); color: var(--surface); font-family: var(--font-head); font-size: 15px; }
+.post-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.post-name { font-weight: 700; font-size: 15px; }
+.post-handle { font-size: 13px; color: var(--muted); }
+.post-text { display: block; width: 100%; min-height: 12em; margin: 4px 0 0; padding: 8px 10px; font: inherit; font-size: 15px; line-height: 1.75; color: var(--ink); background: transparent; border: 1px dashed var(--line); border-radius: 10px; resize: vertical; field-sizing: content; }
+.post-text:focus { outline: none; border-style: solid; border-color: var(--accent); background: var(--sunken); }
+.post-text[readonly] { border-color: transparent; resize: none; }
+.post-foot { display: flex; justify-content: space-between; margin-top: 6px; font-size: 12px; color: var(--muted); }
+.linkcard { display: grid; gap: 2px; margin-top: 10px; padding: 12px 14px; background: var(--sunken); border: 1px solid var(--line); border-radius: 12px; }
+.linkcard-host { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.linkcard-title { font-weight: 700; }
+.seal { position: absolute; top: 18px; right: 22px; width: 82px; height: 82px; display: grid; place-content: center; text-align: center; border: 3px double var(--seal); border-radius: 50%; color: var(--seal); font-family: var(--font-seal); font-size: 21px; line-height: 1.05; rotate: -14deg; animation: seal 0.32s ease-out both; }
+.seal small { display: block; margin-top: 3px; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.02em; }
+.seal.is-rejected { border-color: var(--muted); color: var(--muted); }
+@keyframes seal { from { scale: 1.35; opacity: 0.5; } to { scale: 1; opacity: 1; } }
+
+.checks { display: grid; gap: 16px; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.checks h2 { margin: 0; font-family: var(--font-head); font-size: 15px; }
+.check-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.check { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; }
+.mark { width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; font-size: 12px; font-weight: 700; line-height: 1; }
+.mark.ok { background: var(--ok-soft); color: var(--ok); }
+.mark.warn { background: var(--warn-soft); color: var(--warn); }
+.mark.block { background: var(--block-soft); color: var(--block); }
+.check-k { font-weight: 700; font-size: 13px; }
+.check-msg { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.fix { margin-top: 6px; padding: 3px 10px; font-size: 12px; font-weight: 700; color: var(--accent); background: transparent; border: 1px solid var(--accent); border-radius: 6px; cursor: pointer; }
+.actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.btn { padding: 11px 16px; font-weight: 700; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+.btn:hover:not(:disabled) { border-color: var(--muted); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover:not(:disabled) { border-color: var(--accent); filter: brightness(1.08); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.hint { margin: 0; font-size: 12px; color: var(--muted); }
+kbd { padding: 0 5px; font-family: var(--font-mono); font-size: 11px; background: var(--surface); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; }
+
+.toast { position: fixed; left: 50%; bottom: 24px; translate: -50% 0; padding: 10px 18px; background: var(--ink); color: var(--surface); border-radius: 999px; font-size: 13px; box-shadow: 0 6px 20px rgb(0 0 0 / 0.18); }
+
+@media (max-width: 1060px) {
+  .desk { grid-template-columns: 250px minmax(0, 1fr); }
+  .checks { grid-column: 1 / -1; }
+}
+@media (max-width: 720px) {
+  .desk { grid-template-columns: minmax(0, 1fr); }
+  .queue ul { grid-auto-flow: column; grid-auto-columns: 220px; overflow-x: auto; padding-bottom: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seal { animation: none; }
+}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="title">
+      <h1>マラソン投稿デスク<span class="mock-tag">モック・投稿は送信されません</span></h1>
+      <p>Threads の予約投稿を、承認したものだけ公開します。本文はクリックして直接直せます。</p>
+    </div>
+    <dl class="counts">
+      <div class="count"><dt>承認待ち</dt><dd data-count="pending">0</dd></div>
+      <div class="count is-block"><dt>要修正</dt><dd data-count="block">0</dd></div>
+      <div class="count is-done"><dt>予約済み</dt><dd data-count="approved">0</dd></div>
+      <div class="count"><dt>却下</dt><dd data-count="rejected">0</dd></div>
+    </dl>
+  </header>
+
+  <section class="timeline" aria-label="お買い物マラソン期間の投稿予定">
+    <div class="timeline-head">
+      <span>2026年9月 お買い物マラソン（サンプル予定）</span>
+      <span><kbd>J</kbd> <kbd>K</kbd> 移動　<kbd>A</kbd> 承認　<kbd>R</kbd> 却下</span>
+    </div>
+    <div class="timeline-scroll"><div class="track" data-track></div></div>
+  </section>
+
+  <div class="desk">
+    <nav class="queue" aria-label="投稿キュー"><ul data-queue></ul></nav>
+    <section class="preview" data-preview aria-label="投稿プレビュー"></section>
+    <aside class="checks" data-checks aria-label="公開前チェック"></aside>
+  </div>
+</div>
+<div class="toast" role="status" data-toast hidden></div>
+
+<script>
+(() => {
+  const SITE = { title: '買いまわり帳｜今日の10ショッププラン', host: 'kaimawari.example' };
+  const CALC = { title: 'ラクヨコ送料無料ライン計算機｜買いまわり帳', host: 'kaimawari.example/rakuyoko' };
+  const RISKY = ['絶対', 'いちばんお得', '一番お得', '最安', '必ず', '確実に', '100%'];
+  const RANGE = { start: new Date('2026-09-18T12:00:00+09:00'), end: new Date('2026-09-24T06:00:00+09:00') };
+  const PERIOD = { start: new Date('2026-09-19T20:00:00+09:00'), end: new Date('2026-09-24T01:59:00+09:00') };
+
+  const posts = [
+    { id: 'p1', at: '2026-09-18T21:00', kind: '前日告知', from: '行事カレンダー（開始24時間前）', link: SITE, state: 'approved',
+      fact: 'マラソン日程：9/19 20:00〜9/24 01:59',
+      text: '明日の夜20時から、お買い物マラソン。\n\n今夜のうちにやっておくのは2つだけ。\n・どうせ買う日用品をカートに入れる\n・1,000円に届かない物は、同じショップでまとめる\n\n10ショップ分の候補は毎朝更新してる。\n#PR' },
+    { id: 'p2', at: '2026-09-19T19:00', kind: '開始1時間前', from: '行事カレンダー（開始1時間前）', link: null, state: 'pending',
+      fact: 'エントリー必須：公式ガイド',
+      text: 'あと1時間でマラソン。\n\n毎回いちばん多い失敗は、エントリーし忘れて倍率が付かないやつ。\n買う前に押しておくだけで防げる。\n#PR' },
+    { id: 'p3', at: '2026-09-19T20:05', kind: '開始直後・今日の10ショップ', from: 'plan.json（合計が安い順）', link: SITE, state: 'pending',
+      fact: '合計と見込みpt：今朝の plan.json（税抜10%割り戻しの概算）',
+      text: 'マラソン始まった。\n\n送料込み1,000円台だけで10ショップ埋めると、合計¥10,175。\n見込みは924pt、実質9%くらい。\n\n洗剤、麦茶、猫のおやつ。どうせ買う物だけで組んだ。\n在庫切れは毎朝入れ替わる。' },
+    { id: 'p4', at: '2026-09-21T12:10', kind: '中日・本命と合わせる', from: 'plan.json ＋ 倍率計算機', link: SITE, state: 'pending',
+      fact: '上限7,000pt：開催告知ページ',
+      text: '10ショップ埋めたあとに本命の3万円を買うと、ボーナスだけで約2,450pt。\n\n上限は7,000pt。\n税込で約85,600円までは、買うほどボーナスが増える計算。\n\n計算機に金額を入れると、上限まであといくらか出る。\n#PR' },
+    { id: 'p5', at: '2026-09-22T21:00', kind: 'ラクヨコ計算機の紹介', from: 'ラクヨコ注文条件（公式発表）', link: CALC, state: 'pending',
+      fact: '注文条件：楽天プレスリリース 2026/8/25',
+      text: 'ラクヨコは絶対いちばんお得。\n\n2,100円から送料無料で、16,666円を超えると注文できない。\nカートが上限を超えたときの分け方を出す計算機を作った。\n#PR' },
+    { id: 'p6', at: '2026-09-23T21:00', kind: '終了前日', from: 'plan.json（レビュー評価順）', link: SITE, state: 'pending',
+      fact: null,
+      text: '残り1日ちょっと。\n\nまだ5ショップの人は、レビューが高い1,000円台で残りを埋めるのが早い。\n麦茶とペットのおやつは、在庫が減るのが早め。\n#PR' },
+    { id: 'p7', at: '2026-09-24T00:00', kind: 'ラスト2時間', from: '行事カレンダー（終了2時間前）', link: SITE, state: 'pending',
+      fact: '終了時刻：9/24 01:59',
+      text: 'マラソン、残り2時間。\n\n1,000円に数十円足りないショップがあったら、同じショップで小物を足すと1カウントになる。\n送料は1,000円に含まれないので注意。\n#PR' },
+  ];
+
+  const $ = (sel) => document.querySelector(sel);
+  let current = 'p3';
+  let toastTimer;
+
+  const fmt = (iso) => {
+    const d = new Date(iso + ':00+09:00');
+    const w = '日月火水木金土'[d.getDay()];
+    return `${d.getMonth() + 1}/${d.getDate()}（${w}）${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  };
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+  const checksFor = (post) => {
+    const text = post.text;
+    const list = [];
+    list.push(/#PR|【PR】|(^|\s)PR(\s|$)/.test(text)
+      ? { k: 'PR表記', s: 'ok', msg: '本文に「#PR」があります' }
+      : { k: 'PR表記', s: 'block', msg: 'アフィリエイト報酬につながる投稿です。ステマ規制のため PR 表記が必要です', fix: 'pr' });
+    const len = [...text].length;
+    list.push(len <= 500
+      ? { k: '文字数', s: 'ok', msg: `${len} / 500字` }
+      : { k: '文字数', s: 'block', msg: `${len} / 500字。Threads の上限を超えています` });
+    const hits = RISKY.filter((w) => text.includes(w));
+    list.push(hits.length
+      ? { k: '断定・誇大表現', s: 'block', msg: `「${hits.join('」「')}」は優良誤認と取られるおそれがあります。言い換えてください` }
+      : { k: '断定・誇大表現', s: 'ok', msg: '該当なし' });
+    list.push({ k: '投稿先', s: 'ok', msg: 'Threads は楽天アフィリエイトの認定SNS' });
+    list.push(post.fact
+      ? { k: '数字と条件の出典', s: 'ok', msg: post.fact }
+      : { k: '数字と条件の出典', s: 'warn', msg: '出典が紐づいていません。承認はできますが、数字は再確認を' });
+    return list;
+  };
+
+  const statusOf = (post) => {
+    if (post.state === 'approved' || post.state === 'rejected') return post.state;
+    const c = checksFor(post);
+    if (c.some((x) => x.s === 'block')) return 'block';
+    if (c.some((x) => x.s === 'warn')) return 'warn';
+    return 'pending';
+  };
+  const PILL = { pending: '承認待ち', block: '要修正', warn: '要確認', approved: '予約済み', rejected: '却下' };
+
+  const renderCounts = () => {
+    const n = { pending: 0, block: 0, approved: 0, rejected: 0 };
+    posts.forEach((p) => { const s = statusOf(p); n[s === 'warn' ? 'pending' : s] += 1; });
+    Object.entries(n).forEach(([k, v]) => { document.querySelector(`[data-count="${k}"]`).textContent = v; });
+  };
+
+  const pos = (date) => ((date - RANGE.start) / (RANGE.end - RANGE.start)) * 100;
+
+  const renderTimeline = () => {
+    const track = $('[data-track]');
+    const days = [];
+    for (let d = 19; d <= 24; d += 1) {
+      const date = new Date(`2026-09-${d}T00:00:00+09:00`);
+      days.push(`<span class="day" style="left:${pos(date)}%">9/${d}</span>`);
+    }
+    const ticks = posts.map((p) => {
+      const left = pos(new Date(p.at + ':00+09:00'));
+      const t = fmt(p.at).replace(/（.）/, ' ');
+      return `<button type="button" class="tick" style="left:${left}%" data-id="${p.id}" data-state="${statusOf(p) === 'warn' ? 'pending' : statusOf(p)}" aria-current="${p.id === current}" aria-label="${fmt(p.at)} ${esc(p.kind)}">
+        <span class="tick-time">${t.split(' ')[1]}</span><span class="tick-dot"></span></button>`;
+    }).join('');
+    track.innerHTML = `<span class="axis"></span>
+      <span class="period" style="left:${pos(PERIOD.start)}%;width:${pos(PERIOD.end) - pos(PERIOD.start)}%"></span>
+      <span class="period-label" style="left:${pos(PERIOD.start)}%">マラソン期間 9/19 20:00 → 9/24 01:59</span>
+      ${days.join('')}${ticks}`;
+  };
+
+  const renderQueue = () => {
+    $('[data-queue]').innerHTML = posts.map((p) => {
+      const s = statusOf(p);
+      const firstLine = p.text.split('\n')[0];
+      return `<li><button type="button" class="q-item" data-id="${p.id}" aria-current="${p.id === current}">
+        <span class="q-time">${fmt(p.at)}</span><span class="q-kind">${esc(p.kind)}</span>
+        <span class="q-text">${esc(firstLine)}</span><span class="pill ${s}">${PILL[s]}</span></button></li>`;
+    }).join('');
+  };
+
+  const renderChecks = () => {
+    const post = posts.find((p) => p.id === current);
+    const list = checksFor(post);
+    const s = statusOf(post);
+    const done = post.state === 'approved' || post.state === 'rejected';
+    const blocked = list.some((c) => c.s === 'block');
+    const marks = { ok: '✓', warn: '!', block: '✕' };
+    const items = list.map((c) => `<li class="check"><span class="mark ${c.s}" aria-hidden="true">${marks[c.s]}</span>
+      <div><div class="check-k">${c.k}</div><div class="check-msg">${esc(c.msg)}</div>
+      ${c.fix === 'pr' && !done ? '<button type="button" class="fix" data-fix="pr">末尾に #PR を追加</button>' : ''}</div></li>`).join('');
+
+    let actions;
+    if (done) {
+      actions = `<div class="actions"><button type="button" class="btn" data-act="undo">${post.state === 'approved' ? '承認を取り消す' : '却下を取り消す'}</button></div>`;
+    } else {
+      actions = `<div class="actions">
+        <button type="button" class="btn btn-primary" data-act="approve" ${blocked ? 'disabled' : ''}>承認して ${fmt(post.at)} に予約</button>
+        <button type="button" class="btn" data-act="reject">却下</button></div>
+        <p class="hint">${blocked ? '✕ の項目を直すと承認できます。' : '承認すると、予約時刻に Threads API から投稿します。'}</p>`;
+    }
+    $('[data-checks]').innerHTML = `<h2>公開前チェック</h2><ul class="check-list">${items}</ul>${actions}`;
+    return s;
+  };
+
+  const renderPreview = () => {
+    const post = posts.find((p) => p.id === current);
+    const done = post.state === 'approved' || post.state === 'rejected';
+    const seal = post.state === 'approved'
+      ? `<div class="seal" aria-label="承認済み">承認<br>済<small>${fmt(post.at).replace(/（.）/, ' ')}</small></div>`
+      : post.state === 'rejected' ? '<div class="seal is-rejected" aria-label="却下">却下</div>' : '';
+    const link = post.link
+      ? `<div class="linkcard"><span class="linkcard-host">${post.link.host}</span><span class="linkcard-title">${esc(post.link.title)}</span></div>`
+      : '';
+    $('[data-preview]').innerHTML = `${seal}
+      <div class="preview-meta"><span>予約 <b class="mono">${fmt(post.at)}</b></span><span>生成元 <b>${esc(post.from)}</b></span></div>
+      <article class="post">
+        <div class="avatar" aria-hidden="true">買</div>
+        <div>
+          <div class="post-head"><span class="post-name">買いまわり帳</span><span class="post-handle">@kaimawari_note（例）</span></div>
+          <label class="visually-hidden" for="post-text">投稿本文</label>
+          <textarea id="post-text" class="post-text" data-text rows="${post.text.split('\n').length + 1}" ${done ? 'readonly' : ''}>${esc(post.text)}</textarea>
+          ${link}
+          <div class="post-foot"><span>${done ? '確定済みの本文' : 'クリックして編集できます'}</span><span class="mono" data-len>${[...post.text].length} / 500</span></div>
+        </div>
+      </article>`;
+  };
+
+  const renderAll = () => { renderCounts(); renderTimeline(); renderQueue(); renderPreview(); renderChecks(); };
+
+  const select = (id) => { current = id; renderAll(); };
+
+  const toast = (msg) => {
+    const el = $('[data-toast]');
+    el.textContent = msg;
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.hidden = true; }, 2600);
+  };
+
+  const nextOpen = () => {
+    const idx = posts.findIndex((p) => p.id === current);
+    const order = [...posts.slice(idx + 1), ...posts.slice(0, idx)];
+    return order.find((p) => p.state === 'pending');
+  };
+
+  const act = (kind) => {
+    const post = posts.find((p) => p.id === current);
+    if (kind === 'approve') {
+      if (post.state !== 'pending' || checksFor(post).some((c) => c.s === 'block')) return;
+      post.state = 'approved';
+      toast(`承認しました。${fmt(post.at)} に投稿します`);
+    } else if (kind === 'reject') {
+      if (post.state !== 'pending') return;
+      post.state = 'rejected';
+      toast('却下しました。この投稿は公開されません');
+    } else if (kind === 'undo') {
+      post.state = 'pending';
+      toast('承認待ちに戻しました');
+      renderAll();
+      return;
+    }
+    renderAll();
+    const next = nextOpen();
+    if (next) setTimeout(() => select(next.id), 700);
+  };
+
+  document.addEventListener('click', (e) => {
+    const pick = e.target.closest('[data-id]');
+    if (pick) { select(pick.dataset.id); return; }
+    const button = e.target.closest('[data-act]');
+    if (button) { act(button.dataset.act); return; }
+    if (e.target.closest('[data-fix="pr"]')) {
+      const post = posts.find((p) => p.id === current);
+      post.text = post.text.replace(/\s+$/, '') + '\n#PR';
+      renderAll();
+      toast('#PR を追加しました');
+    }
+  });
+
+  document.addEventListener('input', (e) => {
+    if (!e.target.matches('[data-text]')) return;
+    const post = posts.find((p) => p.id === current);
+    post.text = e.target.value;
+    document.querySelector('[data-len]').textContent = `${[...post.text].length} / 500`;
+    renderCounts(); renderTimeline(); renderQueue(); renderChecks();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('textarea, input') || e.metaKey || e.ctrlKey || e.altKey) return;
+    const idx = posts.findIndex((p) => p.id === current);
+    const key = e.key.toLowerCase();
+    if (key === 'j') select(posts[Math.min(posts.length - 1, idx + 1)].id);
+    else if (key === 'k') select(posts[Math.max(0, idx - 1)].id);
+    else if (key === 'a') act('approve');
+    else if (key === 'r') act('reject');
+  });
+
+  renderAll();
+})();
+</script>
+<style>.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }</style>

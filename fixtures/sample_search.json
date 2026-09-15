@@ -1,0 +1,38 @@
+{
+  "_note": "デモ用のサンプル。実在の商品・ショップではない。formatVersion=2 の形",
+  "日用品": {"Items": [
+    {"itemName": "【サンプル】詰め替え用 食器洗い洗剤 1,100ml×2本", "itemCode": "sample-a:001", "itemPrice": 1000, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル日用品店A", "shopCode": "sample-a", "mediumImageUrls": [], "reviewCount": 2140, "reviewAverage": 4.52, "pointRate": 1},
+    {"itemName": "【サンプル】圧縮トイレットペーパー 12ロール", "itemCode": "sample-b:001", "itemPrice": 1080, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル生活館B", "shopCode": "sample-b", "mediumImageUrls": [], "reviewCount": 860, "reviewAverage": 4.31, "pointRate": 1},
+    {"itemName": "【サンプル】ハンドソープ 詰め替え 3袋（送料別）", "itemCode": "sample-a:002", "itemPrice": 1000, "taxFlag": 0, "postageFlag": 1, "itemUrl": "#sample", "shopName": "サンプル日用品店A", "shopCode": "sample-a", "mediumImageUrls": [], "reviewCount": 1320, "reviewAverage": 4.4, "pointRate": 1}
+  ]},
+  "食品": {"Items": [
+    {"itemName": "【サンプル】国産 もち麦 800g", "itemCode": "sample-c:001", "itemPrice": 1000, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル穀物屋C", "shopCode": "sample-c", "mediumImageUrls": [], "reviewCount": 3320, "reviewAverage": 4.48, "pointRate": 1},
+    {"itemName": "【サンプル】訳あり 無塩ミックスナッツ 500g", "itemCode": "sample-d:001", "itemPrice": 1180, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプルナッツ工房D", "shopCode": "sample-d", "mediumImageUrls": [], "reviewCount": 12040, "reviewAverage": 4.39, "pointRate": 1},
+    {"itemName": "【サンプル】ドリップコーヒー 50袋", "itemCode": "sample-a:003", "itemPrice": 1000, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル日用品店A", "shopCode": "sample-a", "mediumImageUrls": [], "reviewCount": 780, "reviewAverage": 4.2, "pointRate": 1}
+  ]},
+  "飲料": {"Items": [
+    {"itemName": "【サンプル】国産 麦茶ティーバッグ 54袋×2", "itemCode": "sample-e:001", "itemPrice": 1000, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル茶舗E", "shopCode": "sample-e", "mediumImageUrls": [], "reviewCount": 1560, "reviewAverage": 4.61, "pointRate": 1},
+    {"itemName": "【サンプル】ルイボスティー 100包", "itemCode": "sample-e:002", "itemPrice": 1290, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル茶舗E", "shopCode": "sample-e", "mediumImageUrls": [], "reviewCount": 430, "reviewAverage": 4.55, "pointRate": 1}
+  ]},
+  "スイーツ": {"Items": [
+    {"itemName": "【サンプル】訳あり チョコクランチ 500g", "itemCode": "sample-f:001", "itemPrice": 1000, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル菓子店F", "shopCode": "sample-f", "mediumImageUrls": [], "reviewCount": 5210, "reviewAverage": 4.12, "pointRate": 1},
+    {"itemName": "【サンプル】国産 干しいも 400g", "itemCode": "sample-g:001", "itemPrice": 1300, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル干物屋G", "shopCode": "sample-g", "mediumImageUrls": [], "reviewCount": 25, "reviewAverage": 4.7, "pointRate": 1}
+  ]},
+  "コスメ": {"Items": [
+    {"itemName": "【サンプル】オールインワンジェル 200g", "itemCode": "sample-h:001", "itemPrice": 1100, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプルコスメH", "shopCode": "sample-h", "mediumImageUrls": [], "reviewCount": 980, "reviewAverage": 4.33, "pointRate": 1},
+    {"itemName": "【サンプル】薬用リップクリーム 3本", "itemCode": "sample-i:001", "itemPrice": 950, "taxFlag": 1, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル薬局I", "shopCode": "sample-i", "mediumImageUrls": [], "reviewCount": 640, "reviewAverage": 4.28, "pointRate": 1}
+  ]},
+  "キッチン": {"Items": [
+    {"itemName": "【サンプル】シリコン保存容器 4点セット", "itemCode": "sample-j:001", "itemPrice": 1280, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル台所道具J", "shopCode": "sample-j", "mediumImageUrls": [], "reviewCount": 1890, "reviewAverage": 4.18, "pointRate": 1},
+    {"itemName": "【サンプル】ステンレス 計量スプーン 5本", "itemCode": "sample-j:002", "itemPrice": 1000, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル台所道具J", "shopCode": "sample-j", "mediumImageUrls": [], "reviewCount": 720, "reviewAverage": 4.4, "pointRate": 1}
+  ]},
+  "ペット": {"Items": [
+    {"itemName": "【サンプル】猫用おやつ ささみ 30本", "itemCode": "sample-k:001", "itemPrice": 1000, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプルペット用品K", "shopCode": "sample-k", "mediumImageUrls": [], "reviewCount": 4410, "reviewAverage": 4.57, "pointRate": 1},
+    {"itemName": "【サンプル】犬用 歯みがきシート 100枚", "itemCode": "sample-l:001", "itemPrice": 1050, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプルペット用品L", "shopCode": "sample-l", "mediumImageUrls": [], "reviewCount": 310, "reviewAverage": 4.46, "pointRate": 1}
+  ]},
+  "文具": {"Items": [
+    {"itemName": "【サンプル】油性ボールペン 0.7mm 10本", "itemCode": "sample-m:001", "itemPrice": 1000, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル文具M", "shopCode": "sample-m", "mediumImageUrls": [], "reviewCount": 1220, "reviewAverage": 4.36, "pointRate": 1},
+    {"itemName": "【サンプル】付箋 詰め合わせ 20冊", "itemCode": "sample-n:001", "itemPrice": 1100, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル文具N", "shopCode": "sample-n", "mediumImageUrls": [], "reviewCount": 95, "reviewAverage": 4.25, "pointRate": 1},
+    {"itemName": "【サンプル】ボールペン替芯 セット", "itemCode": "sample-m:002", "itemPrice": 990, "taxFlag": 0, "postageFlag": 0, "itemUrl": "#sample", "shopName": "サンプル文具M", "shopCode": "sample-m", "mediumImageUrls": [], "reviewCount": 400, "reviewAverage": 4.3, "pointRate": 1}
+  ]}
+}

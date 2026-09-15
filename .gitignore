@@ -1,0 +1,6 @@
+.env
+logs/
+data/
+dist-demo/
+__pycache__/
+.pytest_cache/
