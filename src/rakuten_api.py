@@ -1,4 +1,8 @@
-"""楽天市場 商品検索API クライアント（2026年の新仕様 openapi.rakuten.co.jp）"""
+"""楽天ウェブサービス API クライアント（2026年の新仕様 openapi.rakuten.co.jp）
+
+楽天市場の商品検索・ランキングと、楽天ブックス・楽天Kobo の検索を扱う。
+どれも applicationId と accessKey、Referer ヘッダが必要。
+"""
 
 from __future__ import annotations
 
@@ -8,6 +12,9 @@ from urllib.parse import urlparse
 import requests
 
 SEARCH_URL = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20260701"
+RANKING_URL = "https://openapi.rakuten.co.jp/ichibaranking/api/IchibaItem/Ranking/20220601"
+BOOKS_URL = "https://openapi.rakuten.co.jp/services/api/BooksTotal/Search/20170404"
+KOBO_URL = "https://openapi.rakuten.co.jp/services/api/Kobo/EbookSearch/20170426"
 MIN_INTERVAL = 1.1  # 秒。1秒1リクエストを超えない
 MAX_RETRIES = 4
 RETRY_STATUS = {429, 500, 503}
@@ -27,12 +34,15 @@ def _error_detail(data: dict) -> str:
     return f"{data.get('error', '')}: {data.get('error_description', '')}".strip(": ")
 
 
-def parse_items(data: dict) -> list[dict]:
-    """APIレスポンスを扱いやすい形にそろえる（formatVersion 1 と 2 の両方に対応）"""
+def _entries(data: dict, wrapper: str) -> list[dict]:
     raw = data.get("Items") or data.get("items") or []
+    return [entry.get(wrapper, entry) for entry in raw if isinstance(entry, dict)]
+
+
+def parse_items(data: dict) -> list[dict]:
+    """楽天市場の商品検索・ランキングのレスポンスをそろえる（formatVersion 1 と 2 の両方に対応）"""
     items = []
-    for entry in raw:
-        item = entry.get("Item", entry) if isinstance(entry, dict) else {}
+    for item in _entries(data, "Item"):
         images = [u.get("imageUrl", "") if isinstance(u, dict) else u for u in item.get("mediumImageUrls", [])]
         affiliate_url = item.get("affiliateUrl") or ""
         items.append({
@@ -48,9 +58,33 @@ def parse_items(data: dict) -> list[dict]:
             "image": next((u for u in images if u), ""),
             "review_count": int(item.get("reviewCount", 0)),
             "review_average": float(item.get("reviewAverage", 0)),
-            "point_rate": int(item.get("pointRate", 1)),
+            # 倍率と期間。期限切れの倍率も返ってくるので、使う前に planner.apply_point_rates で判定する
+            "point_rate": int(item.get("pointRate") or 1),
+            "point_rate_start": item.get("pointRateStartTime") or "",
+            "point_rate_end": item.get("pointRateEndTime") or "",
+            "shop_of_the_year": int(item.get("shopOfTheYearFlag") or 0) == 1,
+            "rank": int(item.get("rank") or 0),
         })
     return items
+
+
+def parse_books(data: dict) -> list[dict]:
+    """楽天ブックス・楽天Kobo の検索レスポンスをそろえる"""
+    books = []
+    for item in _entries(data, "Item"):
+        affiliate_url = item.get("affiliateUrl") or ""
+        books.append({
+            "name": item.get("title", ""),
+            "author": item.get("author", ""),
+            "price": int(item.get("itemPrice") or 0),
+            "url": affiliate_url or item.get("itemUrl", ""),
+            "has_affiliate": bool(affiliate_url),
+            "image": item.get("mediumImageUrl") or item.get("largeImageUrl") or "",
+            "sales_date": item.get("salesDate") or "",
+            "review_count": int(item.get("reviewCount") or 0),
+            "review_average": float(item.get("reviewAverage") or 0),
+        })
+    return books
 
 
 class RakutenClient:
@@ -74,7 +108,7 @@ class RakutenClient:
         if wait > 0:
             time.sleep(wait)
 
-    def search(self, **params) -> list[dict]:
+    def _get(self, url: str, params: dict) -> dict:
         query = {
             "applicationId": self.app_id,
             "accessKey": self.access_key,
@@ -88,7 +122,7 @@ class RakutenClient:
         for attempt in range(MAX_RETRIES):
             self._throttle()
             try:
-                res = self.session.get(SEARCH_URL, params=query, headers=self._headers, timeout=20)
+                res = self.session.get(url, params=query, headers=self._headers, timeout=20)
             except requests.RequestException as err:
                 # 例外メッセージにはアクセスキー入りのURLが含まれるので出さない
                 raise RakutenApiError(f"楽天APIに接続できませんでした（{type(err).__name__}）") from None
@@ -102,6 +136,20 @@ class RakutenClient:
                 data = {}
             if res.status_code != 200 or "error" in data or "errors" in data:
                 raise RakutenApiError(f"HTTP {res.status_code} {_error_detail(data)}".strip())
-            return parse_items(data)
+            return data
 
         raise RakutenApiError(f"HTTP {res.status_code} が{MAX_RETRIES}回続いたため中断しました")
+
+    def search(self, **params) -> list[dict]:
+        return parse_items(self._get(SEARCH_URL, params))
+
+    def ranking(self, **params) -> list[dict]:
+        """デイリーランキング。順位の昇順で返す"""
+        items = parse_items(self._get(RANKING_URL, params))
+        return sorted(items, key=lambda it: it["rank"] or 10**6)
+
+    def books(self, **params) -> list[dict]:
+        return parse_books(self._get(BOOKS_URL, params))
+
+    def kobo(self, **params) -> list[dict]:
+        return parse_books(self._get(KOBO_URL, params))

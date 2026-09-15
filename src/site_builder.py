@@ -11,6 +11,7 @@ from html import escape
 from pathlib import Path
 
 from .og_image import find_font, render_plan_card, render_rakuyoko_card
+from .sections import badges, books_section, ranking_section
 from .planner import Plan, is_eligible, price_with_tax
 
 ASSETS_DIR = Path(__file__).resolve().parent / "assets"
@@ -118,6 +119,7 @@ def _plan_block(plan: Plan, *, shops_target: int, generated_at: datetime, hidden
         meta.append("<span>送料込み</span>")
         if not item.get("tax_included", True):
             meta.append("<span>税別表示を税込に換算</span>")
+        meta[1:1] = badges(item)
         code = e(item.get("item_code") or item["url"])
         lines.append(
             f'<li class="line"><span class="line-no">{i:02d}</span>{thumb}'
@@ -146,7 +148,7 @@ def _plan_block(plan: Plan, *, shops_target: int, generated_at: datetime, hidden
       <div><dt>実質還元</dt><dd>{plan.effective_rate * 100:.1f}%</dd></div>
     </dl>
     {short}
-    <p class="fine">通常1倍＋買いまわり{plan.multiplier - 1}倍{capped}。税抜価格を10%で割り戻して少なめに見積もっています。ボーナス上限{plan.point_cap:,}pt、エントリーが必要です。</p>
+    <p class="fine">通常1倍（ショップのポイント倍率アップ中の商品は、いまの倍率）＋買いまわり{plan.multiplier - 1}倍{capped}。税抜価格を10%で割り戻して少なめに見積もっています。ボーナス上限{plan.point_cap:,}pt、エントリーが必要です。</p>
   </div>
   <div class="receipt">
     <div class="receipt-head"><span>{STRATEGY_LABELS[plan.strategy]}</span><span>{generated_at:%m/%d %H:%M} 時点の価格</span></div>
@@ -202,7 +204,8 @@ def _history_section(history: list[dict] | None, config: dict) -> str:
 
 
 def _index_body(config: dict, plans: dict[str, Plan], candidates: list[dict], generated_at: datetime,
-                history: list[dict] | None) -> str:
+                history: list[dict] | None, extras: dict | None = None) -> str:
+    extras = extras or {}
     m = config["marathon"]
     cheapest = plans["cheapest"]
     entry_url = m.get("entry_url") or MARATHON_ENTRY_URL
@@ -229,7 +232,7 @@ def _index_body(config: dict, plans: dict[str, Plan], candidates: list[dict], ge
 <section class="calc" id="calc">
   <div class="calc-copy">
     <h2>倍率と還元の計算</h2>
-    <p class="lede">本命の買い物を足したときに何ポイントになるか、上限まであといくらかを確かめられます。</p>
+    <p class="lede">本命の買い物を足したときに何ポイントになるか、上限まであといくらかを確かめられます。ショップ独自のポイント倍率アップは含めない計算です（上のプランの見込みには含めています）。</p>
     <form class="fields" data-marathon-calc>
       <label class="field">ショップ数
         <span class="field-row"><input type="range" name="shops" min="1" max="{m["shops_target"]}" value="{cheapest.multiplier}"><output name="shopsOut" class="big">{cheapest.multiplier}</output></span>
@@ -252,6 +255,10 @@ def _index_body(config: dict, plans: dict[str, Plan], candidates: list[dict], ge
     <p class="note" data-k="cap"></p>
   </div>
 </section>
+
+{ranking_section(extras.get("rankings"))}
+
+{books_section(extras.get("books"), extras.get("kobo"), config)}
 
 <section class="shelf" aria-labelledby="shelf-title">
   <h2 id="shelf-title">今日の送料込み・1,000円台の候補</h2>
@@ -325,7 +332,7 @@ def _sitemap(urls: list[str], generated_at: datetime) -> str:
 
 def build_site(out_dir: Path, *, config: dict, plans: dict[str, Plan], candidates: list[dict],
                generated_at: datetime, demo: bool, site_url: str | None = None,
-               history: list[dict] | None = None) -> list[str]:
+               history: list[dict] | None = None, extras: dict | None = None) -> list[str]:
     """書き出して、運用上の注意（警告）を返す"""
     warnings: list[str] = []
     out_dir = Path(out_dir)
@@ -360,7 +367,7 @@ def build_site(out_dir: Path, *, config: dict, plans: dict[str, Plan], candidate
         "index.html": _page(
             title=f"{name}｜お買い物マラソンの10ショップ",
             description="楽天お買い物マラソンの買いまわりを、送料込み1,000円台の商品で10ショップ埋めるプランを毎日更新。",
-            active="index.html", body=_index_body(config, plans, candidates, generated_at, history),
+            active="index.html", body=_index_body(config, plans, candidates, generated_at, history, extras),
             config=config, generated_at=generated_at, demo=demo,
             canonical=canonical["index.html"], og_image=og_image("index.html"),
         ),

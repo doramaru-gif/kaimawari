@@ -72,6 +72,8 @@ python -m pytest -q
 - `queue_cli.py` / `review_server.py` / `publish_due.py` … 下書き・承認デスク・予約投稿
 - `setup_check.py` / `src/setup_check.py` … 設定チェック
 - `src/rakuten_api.py` / `planner.py` / `site_builder.py` / `assets/` … サイト
+- `src/sections.py` … ポイント倍率・受賞店のチップ、本命探しの売れ筋、本と電子書籍の枠
+- `src/extras.py` … 楽天ブックス・Kobo から1,000円以上・発売済みの本を選ぶ
 - `src/og_image.py` … OGP画像（Windows の游ゴシック等で描画。フォントが無ければ作らず警告）
 - `src/history.py` … 毎朝の選定記録 `data/history.json`（demo は history-demo.json）
 - `src/schedule.py` … 開催予定と投稿枠

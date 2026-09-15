@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import asdict, dataclass
+from datetime import datetime
 
 
 def price_with_tax(item: dict) -> int:
@@ -27,6 +28,31 @@ def is_eligible(item: dict, min_per_shop: int, min_reviews: int = 0) -> bool:
     )
 
 
+def _rakuten_time(value: str) -> datetime | None:
+    try:
+        return datetime.strptime(value, "%Y-%m-%d %H:%M")
+    except (TypeError, ValueError):
+        return None
+
+
+def apply_point_rates(items: list[dict], now: datetime) -> list[dict]:
+    """ショップのポイント倍率のうち、いま有効なものだけを point_rate_active に入れる。
+    APIは終了済み・開始前の倍率も返すため、そのまま使うと見込みポイントを多く見せてしまう。
+    APIの日時は日本時間でタイムゾーンが付かないので、now も日本時間として比べる"""
+    local_now = now.replace(tzinfo=None)
+    for item in items:
+        rate = int(item.get("point_rate") or 1)
+        start = _rakuten_time(item.get("point_rate_start", ""))
+        end = _rakuten_time(item.get("point_rate_end", ""))
+        active = rate > 1 and (start is None or start <= local_now) and (end is None or local_now <= end)
+        item["point_rate_active"] = rate if active else 1
+    return items
+
+
+def _rate(item: dict) -> int:
+    return item.get("point_rate_active", 1)
+
+
 PRIOR_RATING = 4.3   # 楽天の1,000円台商品のだいたいの平均
 PRIOR_WEIGHT = 100   # この件数ぶん平均に寄せる。★5.0でも数十件なら上位に来すぎない
 
@@ -37,8 +63,9 @@ def weighted_rating(item: dict) -> float:
 
 
 STRATEGIES = {
-    "cheapest": lambda it: (price_with_tax(it), -it.get("review_count", 0)),
-    "reviewed": lambda it: (-weighted_rating(it), price_with_tax(it)),
+    # 同じ価格なら、いまポイント倍率が高い商品を先に選ぶ
+    "cheapest": lambda it: (price_with_tax(it), -_rate(it), -it.get("review_count", 0)),
+    "reviewed": lambda it: (-weighted_rating(it), -_rate(it), price_with_tax(it)),
 }
 
 
@@ -100,7 +127,8 @@ def summarize(items: list[dict], *, strategy: str, shops_target: int = 10, point
     """通常1倍 + 買いまわり（ショップ数-1）倍 のポイントを税抜概算で見積もる"""
     prices = [price_with_tax(it) for it in items]
     total = sum(prices)
-    ex_total = sum(ex_tax(p) for p in prices)
+    ex_parts = [(ex_tax(price_with_tax(it)), _rate(it)) for it in items]
+    ex_total = sum(part for part, _ in ex_parts)
     shops = len({it["shop_code"] for it in items})
     multiplier = max(1, min(shops, shops_target))
     raw_bonus = ex_total * (multiplier - 1) // 100
@@ -111,7 +139,7 @@ def summarize(items: list[dict], *, strategy: str, shops_target: int = 10, point
         multiplier=multiplier,
         total=total,
         ex_tax_total=ex_total,
-        normal_points=ex_total // 100,
+        normal_points=sum(part * rate for part, rate in ex_parts) // 100,  # 通常1倍。倍率アップ中はその倍率
         bonus_points=min(raw_bonus, point_cap),
         bonus_capped=raw_bonus > point_cap,
         point_cap=point_cap,

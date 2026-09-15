@@ -21,6 +21,19 @@
     });
   });
 
+  // ランキングなどのタブ切り替え
+  document.querySelectorAll('[data-tabs]').forEach((root) => {
+    const tabs = [...root.querySelectorAll('[data-tab]')];
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => t.setAttribute('aria-selected', String(t === tab)));
+        root.querySelectorAll('[data-panel]').forEach((panel) => {
+          panel.hidden = panel.dataset.panel !== tab.dataset.tab;
+        });
+      });
+    });
+  });
+
   // 買ったチェック（この端末にだけ保存）。チェックした商品の枠にスタンプを押す
   const BOUGHT_KEY = 'kaimawari:bought';
   const BOUGHT_KEEP_MS = 30 * 24 * 60 * 60 * 1000;

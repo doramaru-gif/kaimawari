@@ -25,7 +25,8 @@ search:
   max_price: 1380
   min_review_count: 30
   hits: 30
-  ng_keyword: ふるさと納税 定期便 予約
+  ng_keyword: ふるさと納税 定期便 予約 初回限定 初回購入   # 初回限定は、買ったことがある人には同じ値段で買えない
+  include_point_up: true      # ポイント倍率アップ中の商品も候補に入れる（1枠ごとに検索を1回追加）
   # genre_id は楽天市場ジャンル検索API（IchibaGenre/Search）で確認した値。キーワードだけだと別カテゴリの商品が混ざる
   queries:
     - {label: 日用品, keyword: "1000円ポッキリ", genre_id: 568199}   # 日用品雑貨・文房具・手芸 > 日用消耗品
@@ -42,6 +43,17 @@ rakuyoko:
   min_order: 2100
   max_order: 16666
   example_prices: [1990, 2490, 3980, 1290, 4980, 2980, 890, 1580]
+
+# トップページの追加セクション。1回の更新でAPIを 売れ筋4回＋本2回 呼ぶ
+extras:
+  ranking_limit: 10
+  rankings:                   # 楽天市場デイリーランキング（sex: 0=男性 1=女性）
+    - {label: 総合}
+    - {label: 女性30代, age: 30, sex: 1}
+    - {label: 女性40代, age: 40, sex: 1}
+    - {label: 男性30代, age: 30, sex: 0}
+  books: {genre_id: "001001", sort: sales, limit: 6, params: {availability: 1}}   # 楽天ブックス 本 > 漫画（コミック）。在庫ありだけ（売上順の上位は予約が多い）
+  kobo: {genre_id: "101904", sort: reviewCount, limit: 6}                        # 楽天Kobo 漫画（コミック）。1,000円以上は少ないので出るぶんだけ
 
 threads:
   review_port: 8766

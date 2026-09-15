@@ -1,4 +1,4 @@
-"""買いまわり帳: 楽天市場APIから候補を集め、買いまわりプランの静的サイトを書き出す
+"""買いまわり帳: 楽天のAPIから候補を集め、買いまわりプランの静的サイトを書き出す
 
 python main.py --demo      サンプルデータで dist-demo/ に書き出す（APIキー不要）
 python main.py --dry-run   実データでプランをログに出すだけ
@@ -16,8 +16,9 @@ from pathlib import Path
 import yaml
 from dotenv import load_dotenv
 
+from src.extras import pick_books
 from src.history import record_history
-from src.planner import STRATEGIES, pick_items, summarize
+from src.planner import STRATEGIES, apply_point_rates, pick_items, summarize
 from src.rakuten_api import RakutenApiError, RakutenClient, parse_items
 from src.schedule import JST, format_period, next_event, parse_events
 from src.site_builder import build_site
@@ -30,12 +31,13 @@ def load_config() -> dict:
     return yaml.safe_load((ROOT / "config.yaml").read_text(encoding="utf-8"))
 
 
-def apply_next_event(config: dict, now: datetime) -> None:
-    """開催予定があれば、サイトの「次回」表示とボーナス上限をその回に合わせる"""
+def apply_next_event(config: dict, now: datetime):
+    """開催予定があれば、サイトの「次回」表示とボーナス上限をその回に合わせ、その回を返す"""
     event = next_event(parse_events(config.get("marathon_events")), now)
     if event:
         config["marathon"]["next_period"] = format_period(event)
         config["marathon"]["point_cap"] = event.point_cap
+    return event
 
 
 def build_search_params(search: dict, query: dict) -> dict:
@@ -55,34 +57,75 @@ def build_search_params(search: dict, query: dict) -> dict:
     return params
 
 
-def collect_candidates(config: dict, demo: bool) -> list[dict]:
+def make_client() -> RakutenClient:
+    return RakutenClient(
+        app_id=os.getenv("RAKUTEN_APP_ID"),
+        access_key=os.getenv("RAKUTEN_ACCESS_KEY"),
+        affiliate_id=os.getenv("RAKUTEN_AFFILIATE_ID"),
+        referer=os.getenv("SITE_URL"),
+    )
+
+
+def collect_candidates(config: dict, client: RakutenClient | None) -> list[dict]:
+    """client が None のときはサンプルデータを使う"""
     search = config["search"]
-    if demo:
-        fixture = json.loads((ROOT / "fixtures" / "sample_search.json").read_text(encoding="utf-8"))
-    else:
-        client = RakutenClient(
-            app_id=os.getenv("RAKUTEN_APP_ID"),
-            access_key=os.getenv("RAKUTEN_ACCESS_KEY"),
-            affiliate_id=os.getenv("RAKUTEN_AFFILIATE_ID"),
-            referer=os.getenv("SITE_URL"),
-        )
+    fixture = json.loads((ROOT / "fixtures" / "sample_search.json").read_text(encoding="utf-8")) if client is None else None
 
     candidates = []
     for query in search["queries"]:
         label = query["label"]
-        try:
-            if demo:
-                items = parse_items(fixture.get(label, {}))
-            else:
-                items = client.search(**build_search_params(search, query))
-        except RakutenApiError as err:
-            log.error("%s の取得に失敗: %s", label, err)
-            continue
-        for item in items:
-            item["label"] = label
-        log.info("%s: %d件", label, len(items))
-        candidates.extend(items)
+        params = build_search_params(search, query)
+        # ポイント倍率アップ中の商品は数が少なく、レビュー順の上位に出にくいので別に探す
+        variants = [params, {**params, "pointRateFlag": 1}] if client and search.get("include_point_up") else [params]
+        found = 0
+        for variant in variants:
+            try:
+                items = parse_items(fixture.get(label, {})) if client is None else client.search(**variant)
+            except RakutenApiError as err:
+                log.error("%s の取得に失敗: %s", label, err)
+                continue
+            for item in items:
+                item["label"] = label
+            candidates.extend(items)
+            found += len(items)
+        log.info("%s: %d件", label, found)
     return candidates
+
+
+def collect_extras(config: dict, client: RakutenClient | None, now: datetime, shop_at: datetime | None = None) -> dict:
+    """本命探しの売れ筋と、楽天ブックス・楽天Koboの本。どれかが失敗してもサイトは作る"""
+    extras = {"rankings": [], "books": [], "kobo": []}
+    conf = config.get("extras") or {}
+    if client is None:
+        return extras
+
+    for tab in conf.get("rankings", []):
+        params = {key: tab[key] for key in ("age", "sex", "genreId", "period") if key in tab}
+        try:
+            items = client.ranking(**params)
+        except RakutenApiError as err:
+            log.error("売れ筋（%s）の取得に失敗: %s", tab["label"], err)
+            continue
+        apply_point_rates(items, shop_at or now)
+        extras["rankings"].append({"label": tab["label"], "items": items[: conf.get("ranking_limit", 10)]})
+
+    shelves = (("books", client.books, "booksGenreId", "sales"), ("kobo", client.kobo, "koboGenreId", "reviewCount"))
+    for key, fetch, genre_param, default_sort in shelves:
+        shelf = conf.get(key)
+        if not shelf:
+            continue
+        params = {genre_param: shelf["genre_id"], "sort": shelf.get("sort", default_sort), "hits": 30, **shelf.get("params", {})}
+        try:
+            found = fetch(**params)
+        except RakutenApiError as err:
+            log.error("%s の取得に失敗: %s", key, err)
+            continue
+        extras[key] = pick_books(found, min_price=config["marathon"]["min_per_shop"], today=now.date(),
+                                 limit=shelf.get("limit", 6))
+
+    log.info("売れ筋 %d種類、楽天ブックス %d冊、楽天Kobo %d冊",
+             len(extras["rankings"]), len(extras["books"]), len(extras["kobo"]))
+    return extras
 
 
 def main() -> int:
@@ -95,16 +138,21 @@ def main() -> int:
     load_dotenv(ROOT / ".env")
     config = load_config()
     now = datetime.now(JST)
-    apply_next_event(config, now)
+    event = apply_next_event(config, now)
+    # 買う時点（開催前なら開始時刻）にもポイント倍率が続く商品だけを「倍率アップ」として扱う
+    shop_at = max(now, event.start) if event else now
 
     try:
-        candidates = collect_candidates(config, args.demo)
+        client = None if args.demo else make_client()
     except RakutenApiError as err:
         log.error("%s", err)
         return 2
+
+    candidates = collect_candidates(config, client)
     if not candidates:
         log.error("候補が0件でした。前回のサイトを残して終了します")
         return 1
+    apply_point_rates(candidates, shop_at)
 
     marathon = config["marathon"]
     plans = {}
@@ -124,11 +172,13 @@ def main() -> int:
     if args.dry_run:
         return 0
 
+    extras = collect_extras(config, client, now, shop_at)
     history = record_history(ROOT / "data" / ("history-demo.json" if args.demo else "history.json"),
                              plans, len(candidates), now)
     out_dir = ROOT / (config["site"]["out_dir"] + ("-demo" if args.demo else ""))
     warnings = build_site(out_dir, config=config, plans=plans, candidates=candidates, generated_at=now,
-                          demo=args.demo, site_url=None if args.demo else os.getenv("SITE_URL"), history=history)
+                          demo=args.demo, site_url=None if args.demo else os.getenv("SITE_URL"),
+                          history=history, extras=extras)
     for warning in warnings:
         log.warning("%s", warning)
     log.info("書き出しました: %s", out_dir)
